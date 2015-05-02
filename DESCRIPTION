@@ -1,0 +1,13 @@
+Package: ulanr
+Type: Package
+Title: Reconcilation Service For The Getty Union List of Artist Names
+Version: 0.1
+Date: 2015-04-30
+Authors@R: person("Matthew", "Lincoln", email = "mlincol1@umd.edu",
+  role = c("aut", "cre"))
+Description: More about what it does (maybe more than one line)
+License: MIT + file LICENSE
+Depends: SPARQL
+LazyData: TRUE
+Suggests: testthat
+URL: https://github.com/mdlincoln/ulanr
