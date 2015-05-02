@@ -1,2 +1,31 @@
 # ulanr
-R interface for the Getty Union List of Artist Names
+
+Reconcile artist names to the Getty Union List of Artist Names.
+
+## Installation
+
+You may install `ulanr` directly from GitHub. First install 
+[devtools](http://cran.r-project.org/web/packages/devtools/index.html).
+Then run the following commands to instal the ulanr package:
+
+```r 
+# install.packages("devtools")
+devtools::install_github("mdlincoln/ulanr") 
+```
+
+## Usage
+
+ulanr's main method is `ulan_id` which takes a name as a character vector, along with an optional date range.
+This will construct a SPARQL query fired to the [Getty's endpoint](http://vocab.getty.edu/sparql), and return a canonical ULAN id in the form of a 9-digit number.
+You may restrict the search results to artists whose life dates intersect with a range of years.
+This can be useful to differentiate, for example, between ["Rembrandt van Rijn"](http://vocab.getty.edu/ulan/500011051) and ["Rembrandt Peale"](http://vocab.getty.edu/ulan/500019719).
+
+```r
+> ulan_id("Rembrandt")
+[1] 500011051
+> ulan_id("Rembrandt", years = c(1700, 1800))
+[1] 500019719
+```
+# License
+
+ulanr contains information from Union List of Artist Names (ULAN)® which is made available under the [ODC Attribution License](http://opendatacommons.org/licenses/by/1.0/).
