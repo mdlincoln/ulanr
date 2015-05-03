@@ -2,18 +2,19 @@
 % Please edit documentation in R/ulan_sparql.R
 \name{ulan_sparql}
 \alias{ulan_sparql}
-\title{Search for a matching ULAN id by using the Getty's live SPARQL endpoint and
-its Lucene index.}
+\title{Iterate the SPARQL method over the provided vectors}
 \usage{
-ulan_sparql(name, years)
+ulan_sparql(names, early_year, late_year)
 }
 \arguments{
-\item{name}{A character string of an artist's name}
+\item{early_year}{Match only artists who died after this year.}
 
-\item{years}{Window in which to search for matching artists}
+\item{late_year}{Match only artists who were born before this year.}
+
+\item{name}{A character string of an artist's name}
 }
 \description{
-This internal function implements the \code{method = "sparql"} option for
-\link{ulan_id}. See that funciton for documentation.
+This internal function maps the inputs from the generic \link{ulan_id}
+function to the SPARQL implementation
 }
 

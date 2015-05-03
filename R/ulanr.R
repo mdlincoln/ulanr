@@ -3,12 +3,15 @@
 #' Queries the Getty ULAN to find the best matching ID for a given string. You
 #' may filter the results by specifying an early or late date.
 #'
-#' @param name A name to match with a canonical ULAN id.
-#' @param years Years used to restrict the matching functions. This argument
-#'   should be a range of years in the form \code{c(1550, 1650)}. ULAN IDs will
-#'   only be looked up for artists whose life dates intersect with this range.
-#'   If no years are specified, then ULAN artists will be matched from all
-#'   periods.)
+#' @param names A character vector of names to match to a canonical ULAN id.
+#' @param early_year Match only artists who died after this year. Like
+#'   \code{late_year}, this argument should be a numeric vector of length 1, or
+#'   of the same length as \code{names}. If length 1, the same date restrictions
+#'   will be used to match every value of \code{names}. Otherwise, each name
+#'   match can be restricted to its own pair of early_year and late_year. If no
+#'   \code{early_year} or \code{late_year} are specified, then artists from all
+#'   time periods will be eligible for matching.
+#' @param late_year Match only artists who were born before this year.
 #' @param method This value determines which method will be used to match the
 #'   name to a canonical ULAN id.
 #'
@@ -19,27 +22,33 @@
 #'
 #' @export
 #' @examples
-#' \dontrun{ulan_id("Rembrandt", years = c(1600, 1700), method = "sparql")}
-#' \dontrun{ulan_id("Rembrandt", years = c(1700, 1800), method = "sparql")}
-ulan_id <- function(name, years = NULL, method = c("sparql")) {
+#' \dontrun{ulan_id("Rembrandt", early_year = 1600, late_year = 1700, method = "sparql")}
+#' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900), late_year = c(1700, 2000), method = "sparql")}
+ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql")) {
 
-  # Check if there is any name
-  if(any(is.na(name), is.null(name), name == "")) {
-    warning("NA, NULL, and '' names returned as NULL")
-    return(NULL)
+  # Check names validity
+  if(class(names) != "character")
+    stop("names should be a character vector")
+
+  # Check if early_year and late_year are compatible
+  if(length(early_year) != length(late_year))
+    stop("early_year and late_year must be of equal length")
+
+  # Check early_year validity
+  if(class(early_year) != "numeric")
+    stop("early_year should be a numeric vector")
+  if(length(early_year) != 1) {
+    if(length(early_year) != length(names))
+      stop("early_year must be the same length as names, or length 1")
   }
 
-  # Check years validity
-  if(!(is.null(years))) {
-    if (length(years) != 2)
-      stop("Year should be a numeric vector with two values.")
-    if (years[1] > years[2])
-      stop("The first value for years should be smaller than the second value.")
-  }
+  # Check late_year validity
+  if(class(late_year) != "numeric")
+    stop("late_year should be a numeric vector")
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql(name, years)
+    ulan_sparql(names, early_year, late_year)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
