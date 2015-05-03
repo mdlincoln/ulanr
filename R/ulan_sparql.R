@@ -9,13 +9,13 @@
 #' @param late_year Match only artists who were born before this year.
 ulan_sparql_handler <- function(name, early_year, late_year) {
 
-  # Return NULL for missing or empty values of name
+  # Return NA for missing or empty values of name
   if(is.null(name))
-    return(NULL)
+    return(NA)
   if(is.na(name))
-    return(NULL)
+    return(NA)
   if(name == "")
-    return(NULL)
+    return(NA)
 
   # Strip punctuation from name string
   name <- tolower(gsub("[[:punct:]]", "", name))
@@ -45,7 +45,7 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
 
   if(nrow(results) == 0) {
     warning("No matches found for the following name: ", name)
-    return(NULL)
+    return(NA)
   } else {
     as.integer(results[1,1])
   }

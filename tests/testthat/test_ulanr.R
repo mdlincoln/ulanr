@@ -1,11 +1,11 @@
 library(ulanr)
 context("SPARQL results")
 
-test_that("no matching results returns NULL", {
-  expect_null(ulan_id("asfjk"))
+test_that("no matching results returns NA", {
+  expect_equal(ulan_id("asfjk"), c(NA))
   expect_warning(ulan_id("asfjk"))
-  expect_equal(ulan_id(c("Rembrandt", NA)), c(500011051, NULL))
-  expect_null(ulan_id(""))
+  expect_equal(ulan_id(c("Rembrandt", NA)), c(500011051, NA))
+  expect_equal(ulan_id(""), c(NA))
 })
 
 test_that("NULL or NA names return NULL", {
