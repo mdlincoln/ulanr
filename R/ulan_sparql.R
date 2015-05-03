@@ -5,8 +5,17 @@
 #' \link{ulan_id}. See that funciton for documentation.
 #'
 #' @param name A character string of an artist's name
-#' @param years Window in which to search for matching artists
-ulan_sparql <- function(name, years) {
+#' @param early_year Match only artists who died after this year.
+#' @param late_year Match only artists who were born before this year.
+ulan_sparql_handler <- function(name, early_year, late_year) {
+  print(paste(name, early_year, late_year))
+  # Return NULL for missing or empty values of name
+  if(is.null(name))
+    return(NULL)
+  if(is.na(name))
+    return(NULL)
+  if(name == "")
+    return(NULL)
 
   # Strip punctuation from name string
   name <- tolower(gsub("[[:punct:]]", "", name))
@@ -20,20 +29,16 @@ ulan_sparql <- function(name, years) {
       dc:identifier ?id ;
       xl:altLabel [luc:term '", name, "'] .")
 
-  # If life date limits have been provided, add them to the query
-  if(!(is.null(years))) {
-    date_filter <- paste0("
+  # Construct date filter
+  date_filter <- paste0("
       ?artist foaf:focus [gvp:biographyPreferred ?bio] .
       ?bio gvp:estStart ?startdate ;
            gvp:estEnd ?enddate .
-      FILTER(?enddate >= '", years[1], "'^^xsd:gYear && ?startdate <= '",
-      years[2], "'^^xsd:gYear)")
-
-    base_query <- paste0(base_query, date_filter)
-  }
+      FILTER(?enddate >= '", early_year, "'^^xsd:gYear && ?startdate <= '",
+                        late_year, "'^^xsd:gYear)")
 
   # Limit to the top result
-  query_string <- paste0(base_query, "} LIMIT 1")
+  query_string <- paste0(base_query, date_filter, "} LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- SPARQL::SPARQL(url = "http://vocab.getty.edu/sparql", query = query_string)$results
@@ -43,5 +48,13 @@ ulan_sparql <- function(name, years) {
     return(NULL)
   } else {
     as.integer(results[1,1])
+  }
+}
+
+ulan_sparql <- function(names, early_year, late_year) {
+  if(length(names == 1)) {
+    ulan_sparql_handler(names, early_year, late_year)
+  } else {
+    mapply(ulan_sparql_handler(a, b, c), a = names, b = early_year, c = late_year, SIMPLIFY = TRUE)
   }
 }
