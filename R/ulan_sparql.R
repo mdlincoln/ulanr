@@ -52,5 +52,5 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
 }
 
 ulan_sparql <- function(names, early_year, late_year) {
-    mapply(ulan_sparql_handler, names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+  mapply(function(a, b, c) ulan_sparql_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
 }
