@@ -51,6 +51,14 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
   }
 }
 
+#' Iterate the SPARQL method over the provided vectors
+#'
+#' This internal function maps the inputs from the generic \link{ulan_id}
+#' function to the SPARQL implementation
+#'
+#' @param name A character string of an artist's name
+#' @param early_year Match only artists who died after this year.
+#' @param late_year Match only artists who were born before this year.
 ulan_sparql <- function(names, early_year, late_year) {
   mapply(function(a, b, c) ulan_sparql_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
 }
