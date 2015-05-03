@@ -8,7 +8,7 @@
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
 ulan_sparql_handler <- function(name, early_year, late_year) {
-  print(paste(name, early_year, late_year))
+
   # Return NULL for missing or empty values of name
   if(is.null(name))
     return(NULL)
