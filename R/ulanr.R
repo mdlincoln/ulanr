@@ -73,9 +73,9 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
   if(method == "sparql") {
     ulan_sparql(names, early_year, late_year, progress_bar)
   } else if(method == "amatch") {
-    ulan_amatch(names, early_year, late_year)
     # Check that ulanrdata is installed
     check_ulanrdata_package()
+    ulan_amatch(names, early_year, late_year, progress_bar)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
