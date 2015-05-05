@@ -12,3 +12,7 @@ test_that("incorrect early_year and late_year pairings raise errors", {
   expect_error(ulan_id("Rembrandt", early_year = c("a", "b")))
 })
 
+test_that("NAs in early_year or late_year are coerced", {
+  expect_equal(ulan_id(c("Rembrandt", "Hendrick Hondius (I)"), early_year = c(NA, 1500), late_year = c(1700, NA)), c(500011051, 500006788))
+  expect_warning(ulan_id(c("Rembrandt", "Hendrick Hondius (I)"), early_year = c(NA, 1500), late_year = c(1700, NA)))
+})
