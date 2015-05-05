@@ -39,7 +39,7 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- jsonlite::fromJSON(
     paste0("http://vocab.getty.edu/sparql.json?query=",
-           RCurl::curlEscape(query_string)))
+           URLencode(query_string, reserved = TRUE)))
 
   if(length(results$results$bindings) == 0) {
     warning("No matches found for the following name: ", name)
