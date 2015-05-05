@@ -27,7 +27,7 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
     ?artist skos:inScheme ulan: ;
       rdf:type gvp:PersonConcept ;
       dc:identifier ?id ;
-      xl:altLabel [luc:term '", name, "'] .")
+      xl:prefLabel|xl:altLabel [luc:term '", name, "'] .")
 
   # Construct date filter
   date_filter <- paste0("
