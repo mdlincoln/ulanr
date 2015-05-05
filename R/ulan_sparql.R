@@ -52,7 +52,7 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
 #' This internal function maps the inputs from the generic \link{ulan_id}
 #' function to the SPARQL implementation
 #'
-#' @param name A character string of an artist's name
+#' @param names A character string of an artist's name
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
 #' @param progress_bar Display a progress bar for long vectors.
