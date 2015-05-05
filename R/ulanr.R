@@ -24,7 +24,7 @@
 #' @examples
 #' \dontrun{ulan_id("Rembrandt", early_year = 1600, late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900), late_year = c(1700, 2000), method = "sparql")}
-ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql")) {
+ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql", "amatch")) {
 
   # Check names validity
   if(class(names) != "character")
@@ -49,6 +49,9 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
     ulan_sparql(names, early_year, late_year)
+  } else if(method == "amatch") {
+
+    ulan_amatch(names, early_year, late_year)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }

@@ -10,5 +10,7 @@ Description: Matches variant spellings of artist names to canonical ids by
 License: MIT + file LICENSE
 Depends: SPARQL
 LazyData: TRUE
-Suggests: testthat
+Suggests:
+  testthat,
+  ulanrdata
 URL: https://github.com/mdlincoln/ulanr
