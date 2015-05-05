@@ -4,7 +4,8 @@
 \alias{ulan_id}
 \title{Name to ULAN ID}
 \usage{
-ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql"))
+ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql"),
+  progress_bar = "default")
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
@@ -20,7 +21,11 @@ time periods will be eligible for matching.}
 \item{late_year}{Match only artists who were born before this year.}
 
 \item{method}{This value determines which method will be used to match the
-  name to a canonical ULAN id.}
+name to a canonical ULAN id.}
+
+\item{progress_bar}{Display or hide a progress bar. By default, will only
+  display a progress bar if processing more than 50 names. Passing TRUE will
+  force a progress bar to appear; passing FALSE will always hide it.}
 }
 \value{
 A canonical ULAN id for an artist as a 9-digit integer. If no match
