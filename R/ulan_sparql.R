@@ -20,34 +20,32 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
   # Strip punctuation from name string
   name <- tolower(gsub("[[:punct:]]", "", name))
 
-  # Construct the base of the query
-  base_query = paste0("
+  # Construct the query
+  query_string <- paste0("
     SELECT ?id
     WHERE {
     ?artist skos:inScheme ulan: ;
       rdf:type gvp:PersonConcept ;
       dc:identifier ?id ;
-      xl:altLabel [luc:term '", name, "'] .")
+      xl:prefLabel|xl:altLabel [luc:term '", name, "'] .
 
-  # Construct date filter
-  date_filter <- paste0("
-      ?artist foaf:focus [gvp:biographyPreferred ?bio] .
-      ?bio gvp:estStart ?startdate ;
-           gvp:estEnd ?enddate .
-      FILTER(?enddate >= '", early_year, "'^^xsd:gYear && ?startdate <= '",
-                        late_year, "'^^xsd:gYear)")
-
-  # Limit to the top result
-  query_string <- paste0(base_query, date_filter, "} LIMIT 1")
+    ?artist foaf:focus [gvp:biographyPreferred ?bio] .
+    ?bio gvp:estStart ?startdate ;
+         gvp:estEnd ?enddate .
+    FILTER(?enddate >= '", early_year, "'^^xsd:gYear && ?startdate <= '",
+                        late_year, "'^^xsd:gYear)
+    } LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
-  results <- SPARQL::SPARQL(url = "http://vocab.getty.edu/sparql", query = query_string)$results
+  results <- jsonlite::fromJSON(
+    paste0("http://vocab.getty.edu/sparql.json?query=",
+           URLencode(query_string, reserved = TRUE)))
 
-  if(nrow(results) == 0) {
+  if(length(results$results$bindings) == 0) {
     warning("No matches found for the following name: ", name)
     return(NA)
   } else {
-    as.integer(results[1,1])
+    as.integer(results$results$bindings$id$value)
   }
 }
 
@@ -56,9 +54,21 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
 #' This internal function maps the inputs from the generic \link{ulan_id}
 #' function to the SPARQL implementation
 #'
-#' @param name A character string of an artist's name
+#' @param names A character string of an artist's name
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
-ulan_sparql <- function(names, early_year, late_year) {
-  mapply(function(a, b, c) ulan_sparql_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+#' @param progress_bar Display a progress bar for long vectors.
+ulan_sparql <- function(names, early_year, late_year, progress_bar) {
+  # For long queries or if explicitly set, create and increment txtProgressBar
+  if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
+    pb <- txtProgressBar(min = 0, max = length(names), style = 3)
+    ids <- mapply(function(a, b, c) {
+      setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
+      ulan_sparql_handler(a, b, c)},
+      names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    close(pb)
+    return(ids)
+  } else {
+    mapply(function(a, b, c) ulan_sparql_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+  }
 }

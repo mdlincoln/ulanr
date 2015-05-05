@@ -4,7 +4,8 @@
 \alias{ulan_id}
 \title{Name to ULAN ID}
 \usage{
-ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql"))
+ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql"),
+  progress_bar = "default")
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
@@ -15,12 +16,18 @@ of the same length as \code{names}. If length 1, the same date restrictions
 will be used to match every value of \code{names}. Otherwise, each name
 match can be restricted to its own pair of early_year and late_year. If no
 \code{early_year} or \code{late_year} are specified, then artists from all
-time periods will be eligible for matching.}
+time periods will be eligible for matching. Any NA values in
+\code{early_year} or \code{late_year} will be coerced to default maxima and
+minima.}
 
 \item{late_year}{Match only artists who were born before this year.}
 
 \item{method}{This value determines which method will be used to match the
-  name to a canonical ULAN id.}
+name to a canonical ULAN id.}
+
+\item{progress_bar}{Display or hide a progress bar. By default, will only
+  display a progress bar if processing more than 50 names. Passing TRUE will
+  force a progress bar to appear; passing FALSE will always hide it.}
 }
 \value{
 A canonical ULAN id for an artist as a 9-digit integer. If no match
@@ -34,7 +41,9 @@ may filter the results by specifying an early or late date.
 \code{method = "sparql"} requires an internet connection.
 }
 \examples{
-\dontrun{ulan_id("Rembrandt", early_year = 1600, late_year = 1700, method = "sparql")}
-\dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900), late_year = c(1700, 2000), method = "sparql")}
+\dontrun{ulan_id("Rembrandt", early_year = 1600,
+                 late_year = 1700, method = "sparql")}
+\dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
+                 late_year = c(1700, 2000), method = "sparql")}
 }
 

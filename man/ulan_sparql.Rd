@@ -4,14 +4,16 @@
 \alias{ulan_sparql}
 \title{Iterate the SPARQL method over the provided vectors}
 \usage{
-ulan_sparql(names, early_year, late_year)
+ulan_sparql(names, early_year, late_year, progress_bar)
 }
 \arguments{
+\item{names}{A character string of an artist's name}
+
 \item{early_year}{Match only artists who died after this year.}
 
 \item{late_year}{Match only artists who were born before this year.}
 
-\item{name}{A character string of an artist's name}
+\item{progress_bar}{Display a progress bar for long vectors.}
 }
 \description{
 This internal function maps the inputs from the generic \link{ulan_id}

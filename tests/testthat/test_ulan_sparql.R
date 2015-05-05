@@ -9,16 +9,16 @@ test_that("no matching results returns NA", {
 })
 
 test_that("ulan_id handles a vector of names", {
-  expect_equal(ulan_id(c("Rembrandt", "Hendrik Hondius")), c(500011051, 500006788))
+  expect_equal(ulan_id(c("Rembrandt", "Hendrick Hondius (I)")), c(500011051, 500006788))
 })
 
 test_that("multiple names can be queried using one year range", {
-  expect_equal(ulan_id(c("Rembrandt", "Hendrik Hondius"), early_year = 1500, late_year = 1700), c(500011051, 500006788))
+  expect_equal(ulan_id(c("Rembrandt", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), c(500011051, 500006788))
 })
 
 test_that("ulan_id returns correct name", {
   expect_equal(ulan_id("Rembrandt"), 500011051)
-  expect_equal(ulan_id("Hendrik Hondius"), 500006788)
+  expect_equal(ulan_id("Hendrik Hondius (I)"), 500006788)
 })
 
 test_that("ulan_id date restrictions work", {
