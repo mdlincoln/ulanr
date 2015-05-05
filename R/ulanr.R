@@ -10,7 +10,9 @@
 #'   will be used to match every value of \code{names}. Otherwise, each name
 #'   match can be restricted to its own pair of early_year and late_year. If no
 #'   \code{early_year} or \code{late_year} are specified, then artists from all
-#'   time periods will be eligible for matching.
+#'   time periods will be eligible for matching. Any NA values in
+#'   \code{early_year} or \code{late_year} will be coerced to default maxima and
+#'   minima.
 #' @param late_year Match only artists who were born before this year.
 #' @param method This value determines which method will be used to match the
 #'   name to a canonical ULAN id.
@@ -43,6 +45,17 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
   if(length(early_year) != 1) {
     if(length(early_year) != length(names))
       stop("early_year must be the same length as names, or length 1")
+  }
+
+  # Replace any NA values in early_year and late_year with default time range
+  if(any(is.na(early_year))) {
+    warning("NAs in early_year have been coerced to -9999")
+    early_year[is.na(early_year)] <- -9999
+  }
+
+  if(any(is.na(late_year))) {
+    warning("NAs in late_year have been coerced to 2090")
+    late_year[is.na(late_year)] <- 2090
   }
 
   # Check late_year validity
