@@ -16,7 +16,9 @@ of the same length as \code{names}. If length 1, the same date restrictions
 will be used to match every value of \code{names}. Otherwise, each name
 match can be restricted to its own pair of early_year and late_year. If no
 \code{early_year} or \code{late_year} are specified, then artists from all
-time periods will be eligible for matching.}
+time periods will be eligible for matching. Any NA values in
+\code{early_year} or \code{late_year} will be coerced to default maxima and
+minima.}
 
 \item{late_year}{Match only artists who were born before this year.}
 
