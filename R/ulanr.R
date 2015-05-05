@@ -33,6 +33,11 @@
 #'                  late_year = c(1700, 2000), method = "sparql")}
 ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql", "amatch"), progress_bar = "default") {
 
+  # If we need the ulanrdata package, check that it is installed
+  if(!method %in% c("amatch")) {
+    check_ulanrdata_package()
+  }
+
   # Check names validity
   if(class(names) != "character")
     stop("names should be a character vector")
@@ -69,6 +74,8 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
     ulan_sparql(names, early_year, late_year, progress_bar)
   } else if(method == "amatch") {
     ulan_amatch(names, early_year, late_year)
+    # Check that ulanrdata is installed
+    check_ulanrdata_package()
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
