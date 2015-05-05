@@ -21,7 +21,7 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
   name <- tolower(gsub("[[:punct:]]", "", name))
 
   # Construct the query
-  query_string = paste0("
+  query_string <- paste0("
     SELECT ?id
     WHERE {
     ?artist skos:inScheme ulan: ;
@@ -37,13 +37,15 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
     } LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
-  results <- SPARQL::SPARQL(url = "http://vocab.getty.edu/sparql", query = query_string)$results
+  results <- jsonlite::fromJSON(
+    paste0("http://vocab.getty.edu/sparql.json?query=",
+           URLencode(query_string, reserved = TRUE)))
 
-  if(nrow(results) == 0) {
+  if(length(results$results$bindings) == 0) {
     warning("No matches found for the following name: ", name)
     return(NA)
   } else {
-    as.integer(results[1,1])
+    as.integer(results$results$bindings$id$value)
   }
 }
 
