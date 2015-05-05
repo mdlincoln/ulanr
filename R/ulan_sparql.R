@@ -20,25 +20,21 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
   # Strip punctuation from name string
   name <- tolower(gsub("[[:punct:]]", "", name))
 
-  # Construct the base of the query
-  base_query = paste0("
+  # Construct the query
+  query_string = paste0("
     SELECT ?id
     WHERE {
     ?artist skos:inScheme ulan: ;
       rdf:type gvp:PersonConcept ;
       dc:identifier ?id ;
-      xl:altLabel [luc:term '", name, "'] .")
+      xl:prefLabel|xl:altLabel [luc:term '", name, "'] .
 
-  # Construct date filter
-  date_filter <- paste0("
-      ?artist foaf:focus [gvp:biographyPreferred ?bio] .
-      ?bio gvp:estStart ?startdate ;
-           gvp:estEnd ?enddate .
-      FILTER(?enddate >= '", early_year, "'^^xsd:gYear && ?startdate <= '",
-                        late_year, "'^^xsd:gYear)")
-
-  # Limit to the top result
-  query_string <- paste0(base_query, date_filter, "} LIMIT 1")
+    ?artist foaf:focus [gvp:biographyPreferred ?bio] .
+    ?bio gvp:estStart ?startdate ;
+         gvp:estEnd ?enddate .
+    FILTER(?enddate >= '", early_year, "'^^xsd:gYear && ?startdate <= '",
+                        late_year, "'^^xsd:gYear)
+    } LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- SPARQL::SPARQL(url = "http://vocab.getty.edu/sparql", query = query_string)$results
