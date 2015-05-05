@@ -25,6 +25,8 @@ This can be useful to differentiate, for example, between ["Rembrandt van Rijn"]
 [1] 500011051
 > ulan_id("Rembrandt", years = c(1700, 1800))
 [1] 500019719
+> ulan_id(c("Mark Rothko", "Rembrandt"))
+[1] 500014869 500011051
 ```
 # License
 
