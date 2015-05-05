@@ -45,6 +45,17 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
       stop("early_year must be the same length as names, or length 1")
   }
 
+  # Replace any NA values in early_year and late_year with default time range
+  if(any(is.na(early_year))) {
+    warning("NAs in early_year have been coerced to -9999")
+    early_year[is.na(early_year)] <- -9999
+  }
+
+  if(any(is.na(late_year))) {
+    warning("NAs in late_year have been coerced to 2090")
+    late_year[is.na(late_year)] <- 2090
+  }
+
   # Check late_year validity
   if(class(late_year) != "numeric")
     stop("late_year should be a numeric vector")
