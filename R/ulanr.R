@@ -14,6 +14,9 @@
 #' @param late_year Match only artists who were born before this year.
 #' @param method This value determines which method will be used to match the
 #'   name to a canonical ULAN id.
+#' @param progress_bar Display or hide a progress bar. By default, will only
+#'   display a progress bar if processing more than 50 names. Passing TRUE will
+#'   force a progress bar to appear; passing FALSE will always hide it.
 #'
 #' @return A canonical ULAN id for an artist as a 9-digit integer. If no match
 #'   is found, then NULL will be returned isntead.
@@ -24,7 +27,7 @@
 #' @examples
 #' \dontrun{ulan_id("Rembrandt", early_year = 1600, late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900), late_year = c(1700, 2000), method = "sparql")}
-ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql")) {
+ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
 
   # Check names validity
   if(class(names) != "character")
@@ -48,7 +51,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql(names, early_year, late_year)
+    ulan_sparql(names, early_year, late_year, progress_bar)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
