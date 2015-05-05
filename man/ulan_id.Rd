@@ -41,7 +41,9 @@ may filter the results by specifying an early or late date.
 \code{method = "sparql"} requires an internet connection.
 }
 \examples{
-\dontrun{ulan_id("Rembrandt", early_year = 1600, late_year = 1700, method = "sparql")}
-\dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900), late_year = c(1700, 2000), method = "sparql")}
+\dontrun{ulan_id("Rembrandt", early_year = 1600,
+                 late_year = 1700, method = "sparql")}
+\dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
+                 late_year = c(1700, 2000), method = "sparql")}
 }
 
