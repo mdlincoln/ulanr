@@ -1,8 +1,31 @@
 ulan_amatch_handler <- function(name, early_year, late_year) {
-  ulanrdata::id_altname %>% dplyr::filter(
-    birth <= late_year &
-      death >= early_year &
-    agrepl(name, alt_name))
+
+  # Return NA for missing or empty values of name
+  if(is.null(name))
+    return(NA)
+  if(is.na(name))
+    return(NA)
+  if(name == "")
+    return(NA)
+
+  # Strip punctuation from name string
+  name <- tolower(gsub("[[:punct:]]", "", name))
+
+  score_table <- dplyr::arrange(
+    dplyr::mutate(
+      dplyr::filter(
+        ulanrdata::query_table,
+        birth <= late_year & death >= early_year),
+      score = stringdist::stringdist(alt_name, name)),
+    score
+  )[1,]
+
+  if(score_table[[1, 7]] > 10) {
+    warning("No matches found for the following name: ", name)
+    return(NA)
+  } else {
+    score_table[[1, 1]]
+  }
 }
 
 ulan_amatch <- function(names, early_year, late_year, progress_bar) {
@@ -16,6 +39,6 @@ ulan_amatch <- function(names, early_year, late_year, progress_bar) {
     close(pb)
     return(ids)
   } else {
-    mapply(function(a, b, c) ulan_amatch_handler(a, b, c), names, early_year, late_year)
+    mapply(function(a, b, c) ulan_amatch_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
   }
 }
