@@ -4,8 +4,8 @@
 \alias{ulan_id}
 \title{Name to ULAN ID}
 \usage{
-ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql"),
-  progress_bar = "default")
+ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql",
+  "stringdist"), progress_bar = "default")
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
