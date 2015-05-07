@@ -31,10 +31,10 @@
 #'                  late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
 #'                  late_year = c(1700, 2000), method = "sparql")}
-ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql", "amatch"), progress_bar = "default") {
+ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql", "stringdist"), progress_bar = "default") {
 
   # If we need the ulanrdata package, check that it is installed
-  if(!method %in% c("amatch")) {
+  if(!method %in% c("stringdist")) {
     check_ulanrdata_package()
   }
 
@@ -72,10 +72,10 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
     ulan_sparql(names, early_year, late_year, progress_bar)
-  } else if(method == "amatch") {
+  } else if(method == "stringdist") {
     # Check that ulanrdata is installed
     check_ulanrdata_package()
-    ulan_amatch(names, early_year, late_year, progress_bar)
+    ulan_stringdist(names, early_year, late_year, progress_bar)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
