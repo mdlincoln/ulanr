@@ -14,10 +14,8 @@ validate_input <- function(names, early_year, late_year) {
   # Check early_year validity
   if(class(early_year) != "numeric")
     stop("early_year should be a numeric vector")
-  if(length(early_year) != 1) {
-    if(length(early_year) != length(names))
-      stop("early_year must be the same length as names, or length 1")
-  }
+  if(length(early_year) != 1 & length(early_year) != length(names))
+    stop("early_year must be the same length as names, or length 1")
 
   # Check late_year validity
   if(class(late_year) != "numeric")
