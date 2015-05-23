@@ -32,7 +32,7 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
     ?artist foaf:focus [gvp:biographyPreferred ?bio] .
     ?bio gvp:estStart ?startdate ;
          gvp:estEnd ?enddate .
-    FILTER(?enddate >= '", early_year, "'^^xsd:gYear && ?startdate <= '",
+    FILTER(?startdate >= '", early_year, "'^^xsd:gYear && ?enddate <= '",
                         late_year, "'^^xsd:gYear)
     } LIMIT 1")
 

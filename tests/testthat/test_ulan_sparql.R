@@ -22,7 +22,7 @@ test_that("ulan_id returns correct name", {
 })
 
 test_that("ulan_id date restrictions work", {
-  expect_equal(ulan_id("Rembrandt", early_year = 1600, late_year = 1700), 500011051)
-  expect_equal(ulan_id("Rembrandt", early_year = 1700, late_year = 1800), 500019719)
-  expect_equal(ulan_id("Rembrandt", early_year = 1890, late_year = 2000), 500006691)
+  expect_equal(ulan_id("Rembrandt", early_year = 1600, late_year = 1670), 500011051)
+  expect_equal(ulan_id("Rembrandt", early_year = 1770, late_year = 1860), 500019719)
+  expect_equal(ulan_id("Rembrandt", early_year = 1880, late_year = 1930), 500006691)
 })
