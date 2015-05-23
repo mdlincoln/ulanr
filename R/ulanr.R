@@ -1,3 +1,33 @@
+#' Validate input variables
+#'
+#' A helper function that validates the classes and lengths of inputs to
+#' uland_id and ulan_data functions
+#'
+#' @param names A character vector of names to match to a canonical ULAN id.
+#' @param early_year Match only artists who died after this year.
+#' @param late_year Match only artists who were born before this year.
+#'
+#' @return Will stop() code if there are any invalid variable types
+validate_input <- function(names, early_year, late_year) {
+  # Check names validity
+  if(class(names) != "character")
+    stop("names should be a character vector")
+
+  # Check if early_year and late_year are compatible
+  if(length(early_year) != length(late_year))
+    stop("early_year and late_year must be of equal length")
+
+  # Check early_year validity
+  if(class(early_year) != "numeric")
+    stop("early_year should be a numeric vector")
+  if(length(early_year) != 1 & length(early_year) != length(names))
+    stop("early_year must be the same length as names, or length 1")
+
+  # Check late_year validity
+  if(class(late_year) != "numeric")
+    stop("late_year should be a numeric vector")
+}
+
 #' Name to ULAN ID
 #'
 #' Queries the Getty ULAN to find the best matching ID for a given string. You
@@ -33,21 +63,8 @@
 #'                  late_year = c(1700, 2000), method = "sparql")}
 ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
 
-  # Check names validity
-  if(class(names) != "character")
-    stop("names should be a character vector")
-
-  # Check if early_year and late_year are compatible
-  if(length(early_year) != length(late_year))
-    stop("early_year and late_year must be of equal length")
-
-  # Check early_year validity
-  if(class(early_year) != "numeric")
-    stop("early_year should be a numeric vector")
-  if(length(early_year) != 1) {
-    if(length(early_year) != length(names))
-      stop("early_year must be the same length as names, or length 1")
-  }
+  # Check names, early_year, and late_year for valid class, length, and value
+  validate_input(names, early_year, late_year)
 
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
@@ -59,10 +76,6 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
     warning("NAs in late_year have been coerced to 2090")
     late_year[is.na(late_year)] <- 2090
   }
-
-  # Check late_year validity
-  if(class(late_year) != "numeric")
-    stop("late_year should be a numeric vector")
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
