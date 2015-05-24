@@ -5,7 +5,7 @@
 \title{Search for a matching ULAN id by using the Getty's live SPARQL endpoint and
 its Lucene index.}
 \usage{
-ulan_sparql_id_handler(name, early_year, late_year)
+ulan_sparql_id_handler(name, early_year, late_year, inclusive)
 }
 \arguments{
 \item{name}{A character string of an artist's name}
@@ -13,6 +13,9 @@ ulan_sparql_id_handler(name, early_year, late_year)
 \item{early_year}{Match only artists who died after this year.}
 
 \item{late_year}{Match only artists who were born before this year.}
+
+\item{inclusive}{Logical. Should life dates be filtered inclusive of the
+[early_year, late_year] range?}
 }
 \description{
 This internal function implements the \code{method = "sparql"} option for

@@ -4,7 +4,7 @@
 \alias{ulan_sparql_data}
 \title{Iterate the SPARQL method over the provided vectors}
 \usage{
-ulan_sparql_data(names, early_year, late_year, progress_bar)
+ulan_sparql_data(names, early_year, late_year, inclusive, progress_bar)
 }
 \arguments{
 \item{names}{A character string of an artist's name}
@@ -12,6 +12,9 @@ ulan_sparql_data(names, early_year, late_year, progress_bar)
 \item{early_year}{Match only artists who died after this year.}
 
 \item{late_year}{Match only artists who were born before this year.}
+
+\item{inclusive}{Logical. Should life dates be filtered inclusive of the
+[early_year, late_year] range?}
 
 \item{progress_bar}{Display a progress bar for long vectors.}
 }

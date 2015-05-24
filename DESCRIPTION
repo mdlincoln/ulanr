@@ -1,7 +1,7 @@
 Package: ulanr
 Type: Package
 Title: Reconcile artist names to the Getty Union List of Artist Names
-Version: 0.2
+Version: 0.2.1
 Date: 2015-05-24
 Authors@R: person("Matthew", "Lincoln", email = "mlincol1@umd.edu",
   role = c("aut", "cre"))

@@ -4,8 +4,8 @@
 \alias{ulan_id}
 \title{Name to ULAN ID}
 \usage{
-ulan_id(names, early_year = -9999, late_year = 2090, method = c("sparql"),
-  progress_bar = "default")
+ulan_id(names, early_year = -9999, late_year = 2090, inclusive = TRUE,
+  method = c("sparql"), progress_bar = "default")
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
@@ -21,6 +21,12 @@ time periods will be eligible for matching. Any NA values in
 minima.}
 
 \item{late_year}{Match only artists who were born before this year.}
+
+\item{inclusive}{Method for filtering search results using the
+early_year/late_year parameters. TRUE (the default) will only include
+artists whose life dates fall within the range [late_year, early_year].
+FALSE will include artists whose life dates intersect with [early_year,
+late_year]}
 
 \item{method}{This value determines which method will be used to match the
 name to a canonical ULAN id.}
