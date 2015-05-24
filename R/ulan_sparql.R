@@ -96,7 +96,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
         birth_year = NA,
         death_year = NA,
         gender = NA,
-        nationality = NA)
+        nationality = NA,
+        stringsAsFactors = FALSE)
     } else {
       data.frame(
         name = as.character(name),
@@ -105,7 +106,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
         birth_year = as.integer(results$results$bindings$startdate$value),
         death_year = as.integer(results$results$bindings$enddate$value),
         gender = as.character(results$results$bindings$gender$value),
-        nationality = as.character(results$results$bindings$nationality$value))
+        nationality = as.character(results$results$bindings$nationality$value),
+        stringsAsFactors = FALSE)
     }
   }
 
