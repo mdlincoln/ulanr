@@ -88,6 +88,15 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
   # the SPARQL query. The first column is the input name. If no results are
   # returned, then the remaining columns will all be "NA"
   construct_results <- function(sparql_results) {
+
+    check_missing <- function(list_unit) {
+      if(is.null(list_unit)) {
+        return(NA)
+      } else {
+        return(list_unit)
+      }
+    }
+
     if(class(sparql_results) != "list") {
       data.frame(
         name = name,
@@ -100,13 +109,13 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
         stringsAsFactors = FALSE)
     } else {
       data.frame(
-        name = as.character(name),
-        id = as.integer(results$results$bindings$id$value),
-        pref_name = as.character(results$results$bindings$pref_name$value),
-        birth_year = as.integer(results$results$bindings$startdate$value),
-        death_year = as.integer(results$results$bindings$enddate$value),
-        gender = as.character(results$results$bindings$gender$value),
-        nationality = as.character(results$results$bindings$nationality$value),
+        name = as.character(check_missing(name)),
+        id = as.integer(check_missing(results$results$bindings$id$value)),
+        pref_name = as.character(check_missing(results$results$bindings$pref_name$value)),
+        birth_year = as.integer(check_missing(results$results$bindings$startdate$value)),
+        death_year = as.integer(check_missing(results$results$bindings$enddate$value)),
+        gender = as.character(check_missing(results$results$bindings$gender$value)),
+        nationality = as.character(check_missing(results$results$bindings$nationality$value)),
         stringsAsFactors = FALSE)
     }
   }
