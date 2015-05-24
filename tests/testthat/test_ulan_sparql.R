@@ -33,7 +33,7 @@ test_that("no matching results returns NA", {
   expect_equal(ulan_data("asfjk"), data.frame(
     name = c("asfjk"),
     id = c(NA),
-    pref_name = c("Rembrandt van Rijn")
+    pref_name = c("Rembrandt van Rijn"),
     birth_year = c(NA),
     death_year = c(NA),
     gender = c(NA),
@@ -42,7 +42,7 @@ test_that("no matching results returns NA", {
   expect_equal(ulan_data(c("Rembrandt", NA)), data.frame(
     name = c("Rembrandt", NA),
     id = c(500011051, NA),
-    pref_name = c("Rembrandt van Rijn", NA)
+    pref_name = c("Rembrandt van Rijn", NA),
     birth_year = c(1606, NA),
     death_year = c(1669, NA),
     gender = c("male", NA),
@@ -61,7 +61,7 @@ test_that("ulan_data handles a vector of names", {
   expect_equal(ulan_data(c("Rembrandt", "Hendrick Hondius (I)")), data.frame(
     name = c("Rembrandt", "Hendrick Hondius (I)"),
     id = c(500011051, 500006788),
-    pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I")
+    pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
     birth_year = c(1606, 1573),
     death_year = c(1669, 1650),
     gender = c("male", "male"),
@@ -83,7 +83,7 @@ test_that("ulan_data returns correct name", {
   expect_equal(ulan_data("Rembrandt"), data.frame(
     name = c("Rembrandt"),
     id = c(500011051),
-    pref_name = c("Rembrandt van Rijn")
+    pref_name = c("Rembrandt van Rijn"),
     birth_year = c(1606),
     death_year = c(1669),
     gender = c("male"),
@@ -91,7 +91,7 @@ test_that("ulan_data returns correct name", {
   expect_equal(ulan_data("Hendrik Hondius (I)"), data.frame(
     name = c("Hendrick Hondius (I)"),
     id = c(500006788),
-    pref_name = c("Hondius, Hendrik, I")
+    pref_name = c("Hondius, Hendrik, I"),
     birth_year = c(1573),
     death_year = c(1650),
     gender = c("male"),
