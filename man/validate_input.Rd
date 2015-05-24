@@ -4,7 +4,7 @@
 \alias{validate_input}
 \title{Validate input variables}
 \usage{
-validate_input(names, early_year, late_year)
+validate_input(names, early_year, late_year, inclusive)
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
@@ -12,6 +12,9 @@ validate_input(names, early_year, late_year)
 \item{early_year}{Match only artists who died after this year.}
 
 \item{late_year}{Match only artists who were born before this year.}
+
+\item{inclusive}{Logical. Should life dates be filtered inclusive of the
+[early_year, late_year] range?}
 }
 \description{
 A helper function that validates the classes and lengths of inputs to
