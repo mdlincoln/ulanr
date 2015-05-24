@@ -84,3 +84,31 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
 }
+
+#' Name to ULAN data
+#' @export
+ulan_data <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
+
+  # Check names, early_year, and late_year for valid class, length, and value
+  validate_input(names, early_year, late_year)
+
+  # Replace any NA values in early_year and late_year with default time range
+  if(any(is.na(early_year))) {
+    warning("NAs in early_year have been coerced to -9999")
+    early_year[is.na(early_year)] <- -9999
+  }
+
+  if(any(is.na(late_year))) {
+    warning("NAs in late_year have been coerced to 2090")
+    late_year[is.na(late_year)] <- 2090
+  }
+
+  # Dispatch name to query handler based on selected method
+  if(method == "sparql") {
+    ulan_sparql_data(names, early_year, late_year, progress_bar)
+  } else {
+    stop("Method ", method, "is not recognized. Try ?ulan_data for help.")
+  }
+}
+
+
