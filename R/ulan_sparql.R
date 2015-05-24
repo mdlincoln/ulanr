@@ -97,11 +97,12 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
 
   # Construct the query
   query_string <- paste0("
-    SELECT ?id ?startdate ?enddate ?gender ?nationality
+    SELECT ?id ?pref_name ?startdate ?enddate ?gender ?nationality
     WHERE {
       ?artist skos:inScheme ulan: ;
         rdf:type gvp:PersonConcept ;
         dc:identifier ?id ;
+        gvp:prefLabelGVP [gvp:term ?pref_name] ;
         xl:prefLabel|xl:altLabel [luc:term '", name, "'] .
 
       ?artist foaf:focus ?focus .
