@@ -80,7 +80,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql(names, early_year, late_year, progress_bar)
+    ulan_sparql_id(names, early_year, late_year, progress_bar)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }

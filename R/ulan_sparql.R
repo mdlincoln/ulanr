@@ -7,7 +7,7 @@
 #' @param name A character string of an artist's name
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
-ulan_sparql_handler <- function(name, early_year, late_year) {
+ulan_sparql_id_handler <- function(name, early_year, late_year) {
 
   # Return NA for missing or empty values of name
   if(is.null(name))
@@ -58,18 +58,18 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
 #' @param progress_bar Display a progress bar for long vectors.
-ulan_sparql <- function(names, early_year, late_year, progress_bar) {
+ulan_sparql_id <- function(names, early_year, late_year, progress_bar) {
   # For long queries or if explicitly set, create and increment txtProgressBar
   if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_sparql_handler(a, b, c)},
+      ulan_sparql_id_handler(a, b, c)},
       names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
     close(pb)
     return(ids)
   } else {
-    mapply(function(a, b, c) ulan_sparql_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    mapply(function(a, b, c) ulan_sparql_id_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
   }
 }
 
