@@ -46,9 +46,9 @@ ulan_sparql_id_handler <- function(name, early_year, late_year, inclusive) {
     SELECT ?id
     WHERE {
     ?artist skos:inScheme ulan: ;
+      luc:term '", name, "' ;
       rdf:type gvp:PersonConcept ;
-      dc:identifier ?id ;
-      xl:prefLabel|xl:altLabel [luc:term '", name, "'] .
+      dc:identifier ?id .
 
     ?artist foaf:focus [gvp:biographyPreferred ?bio] .
     ?bio gvp:estStart ?startdate ;
@@ -161,10 +161,10 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
     SELECT ?id ?pref_name ?startdate ?enddate ?gender ?nationality
     WHERE {
       ?artist skos:inScheme ulan: ;
+        luc:term '", strip_name, "' ;
         rdf:type gvp:PersonConcept ;
         dc:identifier ?id ;
-        gvp:prefLabelGVP [gvp:term ?pref_name] ;
-        xl:prefLabel|xl:altLabel [luc:term '", strip_name, "'] .
+        gvp:prefLabelGVP [gvp:term ?pref_name] .
 
       ?artist foaf:focus ?focus .
       ?focus gvp:biographyPreferred ?bio .
