@@ -87,6 +87,10 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 
 #' Name to ULAN data
 #'
+#' Queries the Getty ULAN to find the best matching ID for a given string,
+#' returning the ID as well as various artist attributes. You may filter the
+#' results by specifying an early or late date.
+#'
 #' @inheritParams ulan_id
 #'
 #' @return A data frame with 6 columns.
@@ -101,6 +105,11 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 #' }
 #'
 #' @export
+#' @examples
+#' \dontrun{ulan_data("Rembrandt", early_year = 1600,
+#'                  late_year = 1700, method = "sparql")}
+#' \dontrun{ulan_data(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
+#'                  late_year = c(1700, 2000), method = "sparql")}
 ulan_data <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
 
   # Check names, early_year, and late_year for valid class, length, and value
