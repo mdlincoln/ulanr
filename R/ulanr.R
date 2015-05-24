@@ -43,6 +43,11 @@ validate_input <- function(names, early_year, late_year) {
 #'   \code{early_year} or \code{late_year} will be coerced to default maxima and
 #'   minima.
 #' @param late_year Match only artists who were born before this year.
+#' @param inclusive Method for filtering search results using the
+#'   early_year/late_year parameters. TRUE (the default) will only include
+#'   artists whose life dates fall within the range [late_year, early_year].
+#'   FALSE will include artists whose life dates intersect with [early_year,
+#'   late_year]
 #' @param method This value determines which method will be used to match the
 #'   name to a canonical ULAN id.
 #' @param progress_bar Display or hide a progress bar. By default, will only
@@ -62,7 +67,7 @@ validate_input <- function(names, early_year, late_year) {
 #'                  late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
 #'                  late_year = c(1700, 2000), method = "sparql")}
-ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
+ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql"), progress_bar = "default") {
 
   # Check names, early_year, and late_year for valid class, length, and value
   validate_input(names, early_year, late_year)
@@ -80,7 +85,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql_id(names, early_year, late_year, progress_bar)
+    ulan_sparql_id(names, early_year, late_year, inclusive, progress_bar)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
   }
@@ -115,7 +120,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 #'                  late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_data(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
 #'                  late_year = c(1700, 2000), method = "sparql")}
-ulan_data <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
+ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql"), progress_bar = "default") {
 
   # Check names, early_year, and late_year for valid class, length, and value
   validate_input(names, early_year, late_year)
@@ -133,7 +138,7 @@ ulan_data <- function(names, early_year = -9999, late_year = 2090, method = c("s
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql_data(names, early_year, late_year, progress_bar)
+    ulan_sparql_data(names, early_year, late_year, inclusive, progress_bar)
   } else {
     stop("Method ", method, "is not recognized. Try ?ulan_data for help.")
   }

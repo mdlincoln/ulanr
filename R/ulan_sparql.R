@@ -1,3 +1,13 @@
+date_filter <- function(inclusive, early_year, late_year) {
+  if(inclusive) {
+    paste0("FILTER(?startdate >= '", early_year, "'^^xsd:gYear && ?enddate <= '",
+           late_year, "'^^xsd:gYear)")
+  } else {
+    paste0("FILTER(?startdate <= '", late_year, "'^^xsd:gYear && ?enddate >= '",
+           early_year, "'^^xsd:gYear)")
+  }
+}
+
 #' Search for a matching ULAN id by using the Getty's live SPARQL endpoint and
 #' its Lucene index.
 #'
@@ -7,7 +17,7 @@
 #' @param name A character string of an artist's name
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
-ulan_sparql_id_handler <- function(name, early_year, late_year) {
+ulan_sparql_id_handler <- function(name, early_year, late_year, inclusive) {
 
   # Return NA for missing or empty values of name
   if(is.null(name))
@@ -31,10 +41,9 @@ ulan_sparql_id_handler <- function(name, early_year, late_year) {
 
     ?artist foaf:focus [gvp:biographyPreferred ?bio] .
     ?bio gvp:estStart ?startdate ;
-         gvp:estEnd ?enddate .
-    FILTER(?startdate >= '", early_year, "'^^xsd:gYear && ?enddate <= '",
-                        late_year, "'^^xsd:gYear)
-    } LIMIT 1")
+         gvp:estEnd ?enddate .",
+    date_filter(inclusive, early_year, late_year),
+    "} LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- jsonlite::fromJSON(
@@ -58,18 +67,19 @@ ulan_sparql_id_handler <- function(name, early_year, late_year) {
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
 #' @param progress_bar Display a progress bar for long vectors.
-ulan_sparql_id <- function(names, early_year, late_year, progress_bar) {
+ulan_sparql_id <- function(names, early_year, late_year, inclusive, progress_bar) {
   # For long queries or if explicitly set, create and increment txtProgressBar
   if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_sparql_id_handler(a, b, c)},
-      names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+      ulan_sparql_id_handler(a, b, c, d)},
+      names, early_year, late_year, inclusive, SIMPLIFY = TRUE, USE.NAMES = FALSE)
     close(pb)
     return(ids)
   } else {
-    mapply(function(a, b, c) ulan_sparql_id_handler(a, b, c), names, early_year, late_year, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    mapply(function(a, b, c) ulan_sparql_id_handler(a, b, c, d),
+           names, early_year, late_year, inclusive,SIMPLIFY = TRUE, USE.NAMES = FALSE)
   }
 }
 
@@ -82,7 +92,7 @@ ulan_sparql_id <- function(names, early_year, late_year, progress_bar) {
 #' @param name A character string of an artist's name
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
-ulan_sparql_data_handler <- function(name, early_year, late_year) {
+ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
 
   # Helper function to construct a tidy dataframe from the list returned from
   # the SPARQL query. The first column is the input name. If no results are
@@ -135,11 +145,9 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
       ?artist foaf:focus ?focus .
       ?focus gvp:biographyPreferred ?bio .
       ?bio gvp:estStart ?startdate ;
-        gvp:estEnd ?enddate .
-        FILTER(?startdate >= '", early_year, "'^^xsd:gYear && ?enddate <= '",
-                    late_year, "'^^xsd:gYear)
-
-      OPTIONAL {
+        gvp:estEnd ?enddate .",
+      date_filter(inclusive, early_year, late_year),
+      "OPTIONAL {
         ?bio schema:gender [gvp:prefLabelGVP [gvp:term ?gender]] .
       }
 
@@ -172,19 +180,20 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
 #' @param progress_bar Display a progress bar for long vectors.
-ulan_sparql_data <- function(names, early_year, late_year, progress_bar) {
+ulan_sparql_data <- function(names, early_year, late_year, inclusive, progress_bar) {
   # For long queries or if explicitly set, create and increment txtProgressBar
   if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_sparql_data_handler(a, b, c)},
-      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+      ulan_sparql_data_handler(a, b, c, d)},
+      names, early_year, late_year, inclusive, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     close(pb)
     # Bind all returned dataframes together and include the original input vector
     dplyr::bind_rows(ids)
   } else {
-    ids <- mapply(function(a, b, c) ulan_sparql_data_handler(a, b, c), names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    ids <- mapply(function(a, b, c, d) ulan_sparql_data_handler(a, b, c, d),
+                  names, early_year, late_year, inclusive, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     # Bind all returned dataframes together and include the original input vector
     dplyr::bind_rows(ids)
   }
