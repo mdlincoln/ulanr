@@ -86,6 +86,19 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 }
 
 #' Name to ULAN data
+#'
+#' @inheritParams ulan_id
+#'
+#' @return A data frame with 6 columns.
+#' \describe{
+#' \item{\code{id}}{ULAN id}
+#' \item{\code{pref_name}}{ULAN preferred name}
+#' \item{\code{startdate}}{Artist birth date}
+#' \item{\code{enddate}}{Artist death date}
+#' \item{\code{gender}}{Artist gender}
+#' \item{\code{nationality}}{Artist nationality}
+#' }
+#'
 #' @export
 ulan_data <- function(names, early_year = -9999, late_year = 2090, method = c("sparql"), progress_bar = "default") {
 
