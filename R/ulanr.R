@@ -54,6 +54,8 @@ validate_input <- function(names, early_year, late_year) {
 #'
 #' @note \code{method = "sparql"} requires an internet connection.
 #'
+#' @seealso \link{ulan_data}
+#'
 #' @export
 #' @examples
 #' \dontrun{ulan_id("Rembrandt", early_year = 1600,
@@ -102,6 +104,10 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 #' \item{\code{gender}}{Artist gender}
 #' \item{\code{nationality}}{Artist nationality}
 #' }
+#'
+#' @note \code{method = "sparql"} requires an internet connection.
+#'
+#' @seealso \link{ulan_id}
 #'
 #' @export
 #' @examples
