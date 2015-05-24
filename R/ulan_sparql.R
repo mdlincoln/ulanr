@@ -84,13 +84,38 @@ ulan_sparql <- function(names, early_year, late_year, progress_bar) {
 #' @param late_year Match only artists who were born before this year.
 ulan_sparql_data_handler <- function(name, early_year, late_year) {
 
+  # Helper function to construct a tidy dataframe from the list returned from
+  # the SPARQL query. The first column is the input name. If no results are
+  # returned, then the remaining columns will all be "NA"
+  construct_results <- function(sparql_results) {
+    if(class(sparql_results) != "list") {
+      data.frame(
+        name = name,
+        id = NA,
+        pref_name = NA,
+        birth_year = NA,
+        death_year = NA,
+        gender = NA,
+        nationality = NA)
+    } else {
+      data.frame(
+        name = as.character(name),
+        id = as.integer(results$results$bindings$id$value),
+        pref_name = as.character(results$results$bindings$pref_name$value),
+        birth_year = as.integer(results$results$bindings$startdate$value),
+        death_year = as.integer(results$results$bindings$enddate$value),
+        gender = as.character(results$results$bindings$gender$value),
+        nationality = as.character(results$results$bindings$nationality$value))
+    }
+  }
+
   # Return NA for missing or empty values of name
   if(is.null(name))
-    return(NA)
+    return(construct_results(NA))
   if(is.na(name))
-    return(NA)
+    return(construct_results(NA))
   if(name == "")
-    return(NA)
+    return(construct_results(NA))
 
   # Strip punctuation from name string
   name <- tolower(gsub("[[:punct:]]", "", name))
@@ -128,15 +153,11 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
 
   if(length(results$results$bindings) == 0) {
     warning("No matches found for the following name: ", name)
-    return(NA)
+    construct_results(NA)
   } else {
     # Select the "value" fields from the returned list, and reformat them as a
     # tidy dataframe
-    raw_bindings <- unlist(results$results$bindings)
-    select_bindings <- raw_bindings[grepl("value", names(raw_bindings))]
-    select_data <- data.frame(as.list(select_bindings), stringsAsFactors = FALSE)
-    names(select_data) <- gsub("\\.value", "", names(select_data))
-    return(select_data)
+    construct_results(results)
   }
 }
 
@@ -159,14 +180,10 @@ ulan_sparql_data <- function(names, early_year, late_year, progress_bar) {
       names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     close(pb)
     # Bind all returned dataframes together and include the original input vector
-    ulan_table <- dplyr::bind_rows(ids)
-    ulan_table$name <- names
-    return(ulan_table)
+    dplyr::bind_rows(ids)
   } else {
     ids <- mapply(function(a, b, c) ulan_sparql_data_handler(a, b, c), names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     # Bind all returned dataframes together and include the original input vector
-    ulan_table <- dplyr::bind_rows(ids)
-    ulan_table$name <- names
-    return(ulan_table)
+    dplyr::bind_rows(ids)
   }
 }
