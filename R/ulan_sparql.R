@@ -38,8 +38,8 @@ ulan_sparql_handler <- function(name, early_year, late_year) {
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- jsonlite::fromJSON(
-    paste0("http://vocab.getty.edu/sparql.json?query=",
-           URLencode(query_string, reserved = TRUE)))
+    RCurl::getURL(paste0("http://vocab.getty.edu/sparql.json?query=",
+                         RCurl::curlEscape(query_string))))
 
   if(length(results$results$bindings) == 0) {
     warning("No matches found for the following name: ", name)
@@ -96,7 +96,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
         birth_year = NA,
         death_year = NA,
         gender = NA,
-        nationality = NA)
+        nationality = NA,
+        stringsAsFactors = FALSE)
     } else {
       data.frame(
         name = as.character(name),
@@ -105,7 +106,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
         birth_year = as.integer(results$results$bindings$startdate$value),
         death_year = as.integer(results$results$bindings$enddate$value),
         gender = as.character(results$results$bindings$gender$value),
-        nationality = as.character(results$results$bindings$nationality$value))
+        nationality = as.character(results$results$bindings$nationality$value),
+        stringsAsFactors = FALSE)
     }
   }
 
@@ -148,8 +150,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- jsonlite::fromJSON(
-  RCurl::getURL(paste0("http://vocab.getty.edu/sparql.json?query=",
-           URLencode(query_string, reserved = TRUE))))
+    RCurl::getURL(paste0("http://vocab.getty.edu/sparql.json?query=",
+                         RCurl::curlEscape(query_string))))
 
   if(length(results$results$bindings) == 0) {
     warning("No matches found for the following name: ", name)
