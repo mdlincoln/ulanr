@@ -91,6 +91,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, method = c("spa
 #'
 #' @return A data frame with 6 columns.
 #' \describe{
+#' \item{\code{name}}{Original input vector}
 #' \item{\code{id}}{ULAN id}
 #' \item{\code{pref_name}}{ULAN preferred name}
 #' \item{\code{startdate}}{Artist birth date}

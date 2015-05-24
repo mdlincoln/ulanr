@@ -158,11 +158,15 @@ ulan_sparql_data <- function(names, early_year, late_year, progress_bar) {
       ulan_sparql_data_handler(a, b, c)},
       names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     close(pb)
-    # Bind all returned dataframes together
-    return(dplyr::bind_rows(ids))
+    # Bind all returned dataframes together and include the original input vector
+    ulan_table <- dplyr::bind_rows(ids)
+    ulan_table$name <- names
+    return(ulan_table)
   } else {
     ids <- mapply(function(a, b, c) ulan_sparql_data_handler(a, b, c), names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-    # Bind all returned dataframes together
-    return(dplyr::bind_rows(ids))
+    # Bind all returned dataframes together and include the original input vector
+    ulan_table <- dplyr::bind_rows(ids)
+    ulan_table$name <- names
+    return(ulan_table)
   }
 }
