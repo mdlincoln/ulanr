@@ -118,7 +118,7 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
     return(construct_results(NA))
 
   # Strip punctuation from name string
-  name <- tolower(gsub("[[:punct:]]", "", name))
+  strip_name <- tolower(gsub("[[:punct:]]", "", name))
 
   # Construct the query
   query_string <- paste0("
@@ -128,7 +128,7 @@ ulan_sparql_data_handler <- function(name, early_year, late_year) {
         rdf:type gvp:PersonConcept ;
         dc:identifier ?id ;
         gvp:prefLabelGVP [gvp:term ?pref_name] ;
-        xl:prefLabel|xl:altLabel [luc:term '", name, "'] .
+        xl:prefLabel|xl:altLabel [luc:term '", strip_name, "'] .
 
       ?artist foaf:focus ?focus .
       ?focus gvp:biographyPreferred ?bio .
