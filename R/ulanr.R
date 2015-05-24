@@ -1,13 +1,12 @@
 #' Validate input variables
 #'
 #' A helper function that validates the classes and lengths of inputs to
-#' uland_id and ulan_data functions
+#' uland_id and ulan_data functions.  Will stop() code if there are any invalid
+#' variable types
 #'
 #' @param names A character vector of names to match to a canonical ULAN id.
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
-#'
-#' @return Will stop() code if there are any invalid variable types
 validate_input <- function(names, early_year, late_year) {
   # Check names validity
   if(class(names) != "character")
