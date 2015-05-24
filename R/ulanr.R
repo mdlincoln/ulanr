@@ -7,7 +7,8 @@
 #' @param names A character vector of names to match to a canonical ULAN id.
 #' @param early_year Match only artists who died after this year.
 #' @param late_year Match only artists who were born before this year.
-validate_input <- function(names, early_year, late_year) {
+#' @param inclusive A logical vector
+validate_input <- function(names, early_year, late_year, inclusive) {
   # Check names validity
   if(class(names) != "character")
     stop("names should be a character vector")
@@ -25,6 +26,10 @@ validate_input <- function(names, early_year, late_year) {
   # Check late_year validity
   if(class(late_year) != "numeric")
     stop("late_year should be a numeric vector")
+
+  # Check inclusive validity
+  if(class(inclusive) != "logical")
+    stop("inclusive must be a logical vector")
 }
 
 #' Name to ULAN ID
@@ -70,7 +75,7 @@ validate_input <- function(names, early_year, late_year) {
 ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql"), progress_bar = "default") {
 
   # Check names, early_year, and late_year for valid class, length, and value
-  validate_input(names, early_year, late_year)
+  validate_input(names, early_year, late_year, inclusive)
 
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
@@ -123,7 +128,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRU
 ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql"), progress_bar = "default") {
 
   # Check names, early_year, and late_year for valid class, length, and value
-  validate_input(names, early_year, late_year)
+  validate_input(names, early_year, late_year, inclusive)
 
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
