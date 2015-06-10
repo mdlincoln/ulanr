@@ -4,20 +4,20 @@ context("SPARQL ID results")
 test_that("no matching results returns NA", {
   expect_equal(ulan_id("asfjk"), c(NA))
   expect_warning(ulan_id("asfjk"))
-  expect_equal(ulan_id(c("Rembrandt", NA)), c(500011051, NA))
+  expect_equal(ulan_id(c("Rembrandt van Rijn", NA)), c(500011051, NA))
   expect_equal(ulan_id(""), c(NA))
 })
 
 test_that("ulan_id handles a vector of names", {
-  expect_equal(ulan_id(c("Rembrandt", "Hendrick Hondius (I)")), c(500011051, 500006788))
+  expect_equal(ulan_id(c("Rembrandt van Rijn", "Hendrick Hondius (I)")), c(500011051, 500006788))
 })
 
 test_that("multiple names can be queried using one year range", {
-  expect_equal(ulan_id(c("Rembrandt", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), c(500011051, 500006788))
+  expect_equal(ulan_id(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), c(500011051, 500006788))
 })
 
 test_that("ulan_id returns correct name", {
-  expect_equal(ulan_id("Rembrandt"), 500011051)
+  expect_equal(ulan_id("Rembrandt van Rijn"), 500011051)
   expect_equal(ulan_id("Hendrik Hondius (I)"), 500006788)
 })
 
@@ -40,8 +40,8 @@ test_that("no matching results returns NA", {
     nationality = c(NA),
     stringsAsFactors = FALSE))
   expect_warning(ulan_data("asfjk"))
-  expect_equivalent(ulan_data(c("Rembrandt", NA)), data.frame(
-    name = c("Rembrandt", NA),
+  expect_equivalent(ulan_data(c("Rembrandt van Rijn", NA)), data.frame(
+    name = c("Rembrandt van Rijn", NA),
     id = c(500011051, NA),
     pref_name = c("Rembrandt van Rijn", NA),
     birth_year = c(1606, NA),
@@ -61,8 +61,8 @@ test_that("no matching results returns NA", {
 })
 
 test_that("ulan_data handles a vector of names", {
-  expect_equivalent(ulan_data(c("Rembrandt", "Hendrick Hondius (I)")), data.frame(
-    name = c("Rembrandt", "Hendrick Hondius (I)"),
+  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)")), data.frame(
+    name = c("Rembrandt van Rijn", "Hendrick Hondius (I)"),
     id = c(500011051, 500006788),
     pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
     birth_year = c(1606, 1573),
@@ -73,8 +73,8 @@ test_that("ulan_data handles a vector of names", {
 })
 
 test_that("multiple names can be queried using one year range", {
-  expect_equivalent(ulan_data(c("Rembrandt", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), data.frame(
-    name = c("Rembrandt", "Hendrick Hondius (I)"),
+  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), data.frame(
+    name = c("Rembrandt van Rijn", "Hendrick Hondius (I)"),
     id = c(500011051, 500006788),
     pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
     birth_year = c(1606, 1573),
@@ -85,8 +85,8 @@ test_that("multiple names can be queried using one year range", {
 })
 
 test_that("ulan_data returns correct name", {
-  expect_equivalent(ulan_data("Rembrandt"), data.frame(
-    name = c("Rembrandt"),
+  expect_equivalent(ulan_data("Rembrandt van Rijn"), data.frame(
+    name = c("Rembrandt van Rijn"),
     id = c(500011051),
     pref_name = c("Rembrandt van Rijn"),
     birth_year = c(1606),
