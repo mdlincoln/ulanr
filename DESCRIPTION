@@ -16,4 +16,5 @@ LazyData: TRUE
 Suggests:
     testthat
 URL: https://github.com/mdlincoln/ulanr
+BugReports: https://github.com/mdlincoln/ulanr/issues
 RoxygenNote: 5.0.1
