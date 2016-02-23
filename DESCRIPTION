@@ -6,12 +6,14 @@ Date: 2015-05-24
 Authors@R: person("Matthew", "Lincoln", email = "mlincol1@umd.edu",
   role = c("aut", "cre"))
 Description: Matches variant spellings of artist names to canonical ids by
-  calling the Getty Union List of Artist Names SPARQL endpoint.
+    calling the Getty Union List of Artist Names SPARQL endpoint.
 License: MIT + file LICENSE
 Imports:
-  dplyr,
-  jsonlite,
-  RCurl
+    dplyr,
+    jsonlite,
+    RCurl
 LazyData: TRUE
-Suggests: testthat
+Suggests:
+    testthat
 URL: https://github.com/mdlincoln/ulanr
+RoxygenNote: 5.0.1
