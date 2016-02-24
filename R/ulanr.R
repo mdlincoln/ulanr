@@ -162,5 +162,3 @@ ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = T
     unrecognized_method()
   }
 }
-
-
