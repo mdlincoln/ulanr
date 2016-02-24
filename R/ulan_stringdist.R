@@ -71,11 +71,11 @@ ulan_stringdist_id <- function(names, early_year, late_year, inclusive, progress
     ids <- mapply(function(a, b, c, d) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
       ulan_stringdist_id_handler(a, b, c, d)},
-      names, early_year, late_year, inclusive, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+      names, early_year, late_year, inclusive, SIMPLIFY = TRUE, USE.NAMES = FALSE)
     close(pb)
     return(ids)
   } else {
-    mapply(function(a, b, c, d) ulan_stringdist_id_handler(a, b, c, d), names, early_year, late_year, inclusive, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    mapply(function(a, b, c, d) ulan_stringdist_id_handler(a, b, c, d), names, early_year, late_year, inclusive, SIMPLIFY = TRUE, USE.NAMES = FALSE)
   }
 }
 
