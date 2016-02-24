@@ -28,6 +28,18 @@ This can be useful to differentiate, for example, between ["Rembrandt van Rijn"]
 > ulan_id(c("Mark Rothko", "Rembrandt"))
 [1] 500014869 500011051
 ```
+
+The `ulan_data` function returns a dataframe containing the input names vector, and a series of columns with ULAN id, preferred name, and other artist attributes.
+
+```r
+> ulan_data(c("Mark Rothko", "Rembrandt van Rijn"))
+Source: local data frame [2 x 7]
+
+                name        id          pref_name birth_year death_year gender nationality
+1        Mark Rothko 500014869       Rothko, Mark       1903       1970   male    American
+2 Rembrandt van Rijn 500011051 Rembrandt van Rijn       1606       1669   male       Dutch
+```
+
 # License
 
 ulanr contains information from Union List of Artist Names (ULAN)® which is made available under the [ODC Attribution License](http://opendatacommons.org/licenses/by/1.0/).
