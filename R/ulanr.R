@@ -33,6 +33,11 @@ validate_input <- function(names, early_year, late_year, inclusive) {
     stop("inclusive must be a logical vector")
 }
 
+# Helper when method is not recgonized
+unrecognized_method <- function() {
+  stop("Method ", method, " is not recognized. Try ?ulan_id for help.")
+}
+
 #' Name to ULAN ID
 #'
 #' Queries the Getty ULAN to find the best matching ID for a given string. You
@@ -97,7 +102,7 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRU
     check_ulanrdata_package()
     ulan_stringdist_id(names, early_year, late_year, inclusive, progress_bar)
   } else {
-    stop("Method ", method, "is not recognized. Try ?ulan_id for help.")
+    unrecognized_method()
   }
 }
 
@@ -154,7 +159,7 @@ ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = T
     check_ulanrdata_package()
     ulan_stringidst_data(names, early_year, late_year, inclusive, progress_bar)
   } else {
-    stop("Method ", method, "is not recognized. Try ?ulan_data for help.")
+    unrecognized_method()
   }
 }
 
