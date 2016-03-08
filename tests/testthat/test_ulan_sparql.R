@@ -1,4 +1,5 @@
 library(ulanr)
+library(dplyr, warn.conflicts = FALSE)
 context("SPARQL ID results")
 
 test_that("no matching results returns NA", {
@@ -29,107 +30,97 @@ test_that("ulan_id date restrictions work", {
 context("SPARQL data results")
 
 test_that("no matching results returns NA", {
-  expect_equivalent(is.na(ulan_data("asfjk", method = "sparql")), is.na(data.frame(
+  expect_equivalent(is.na(ulan_data("asfjk", method = "sparql")), is.na(data_frame(
     name = c("asfjk"),
     id = c(NA),
     pref_name = c(NA),
     birth_year = c(NA),
     death_year = c(NA),
     gender = c(NA),
-    nationality = c(NA),
-    stringsAsFactors = FALSE)))
+    nationality = c(NA))))
   expect_warning(ulan_data("asfjk", method = "sparql"))
-  expect_equivalent(is.na(ulan_data(c("Rembrandt van Rijn", NA), method = "sparql")), is.na(data.frame(
+  expect_equivalent(is.na(ulan_data(c("Rembrandt van Rijn", NA), method = "sparql")), is.na(data_frame(
     name = c("Rembrandt van Rijn", NA),
     id = c(500011051, NA),
     pref_name = c("Rembrandt van Rijn", NA),
     birth_year = c(1606, NA),
     death_year = c(1669, NA),
     gender = c("male", NA),
-    nationality = c("Dutch", NA),
-    stringsAsFactors = FALSE)))
-  expect_equivalent(is.na(ulan_data("", method = "sparql")), is.na(data.frame(
+    nationality = c("Dutch", NA))))
+  expect_equivalent(is.na(ulan_data("", method = "sparql")), is.na(data_frame(
     name = c(""),
     id = c(NA),
     pref_name = c(NA),
     birth_year = c(NA),
     death_year = c(NA),
     gender = c(NA),
-    nationality = c(NA),
-    stringsAsFactors = FALSE)))
+    nationality = c(NA))))
 })
 
 test_that("ulan_data handles a vector of names", {
-  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)")), data.frame(
+  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)")), data_frame(
     name = c("Rembrandt van Rijn", "Hendrick Hondius (I)"),
-    id = c(500011051, 500006788),
+    id = as.integer(c(500011051, 500006788)),
     pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
-    birth_year = c(1606, 1573),
-    death_year = c(1669, 1650),
+    birth_year = as.integer(c(1606, 1573)),
+    death_year = as.integer(c(1669, 1650)),
     gender = c("male", "male"),
-    nationality = c("Dutch", "Dutch"),
-    stringsAsFactors = FALSE))
+    nationality = c("Dutch", "Dutch")))
 })
 
 test_that("multiple names can be queried using one year range", {
-  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), data.frame(
+  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), data_frame(
     name = c("Rembrandt van Rijn", "Hendrick Hondius (I)"),
-    id = c(500011051, 500006788),
+    id = as.integer(c(500011051, 500006788)),
     pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
-    birth_year = c(1606, 1573),
-    death_year = c(1669, 1650),
+    birth_year = as.integer(c(1606, 1573)),
+    death_year = as.integer(c(1669, 1650)),
     gender = c("male", "male"),
-    nationality = c("Dutch", "Dutch"),
-    stringsAsFactors = FALSE))
+    nationality = c("Dutch", "Dutch")))
 })
 
 test_that("ulan_data returns correct name", {
-  expect_equivalent(ulan_data("Rembrandt van Rijn"), data.frame(
+  expect_equivalent(ulan_data("Rembrandt van Rijn"), data_frame(
     name = c("Rembrandt van Rijn"),
-    id = c(500011051),
+    id = as.integer(c(500011051)),
     pref_name = c("Rembrandt van Rijn"),
-    birth_year = c(1606),
-    death_year = c(1669),
+    birth_year = as.integer(c(1606)),
+    death_year = as.integer(c(1669)),
     gender = c("male"),
-    nationality = c("Dutch"),
-    stringsAsFactors = FALSE))
-  expect_equivalent(ulan_data("Hendrik Hondius (I)"), data.frame(
+    nationality = c("Dutch")))
+  expect_equivalent(ulan_data("Hendrik Hondius (I)"), data_frame(
     name = c("Hendrik Hondius (I)"),
-    id = c(500006788),
+    id = as.integer(c(500006788)),
     pref_name = c("Hondius, Hendrik, I"),
-    birth_year = c(1573),
-    death_year = c(1650),
+    birth_year = as.integer(c(1573)),
+    death_year = as.integer(c(1650)),
     gender = c("male"),
-    nationality = c("Dutch"),
-    stringsAsFactors = FALSE))
+    nationality = c("Dutch")))
 })
 
 test_that("ulan_data date restrictions work", {
-  expect_equivalent(ulan_data("Rembrandt", early_year = 1600, late_year = 1670), data.frame(
+  expect_equivalent(ulan_data("Rembrandt", early_year = 1600, late_year = 1670), data_frame(
     name = c("Rembrandt"),
-    id = c(500011051),
+    id = as.integer(c(500011051)),
     pref_name = c("Rembrandt van Rijn"),
-    birth_year = c(1606),
-    death_year = c(1669),
+    birth_year = as.integer(c(1606)),
+    death_year = as.integer(c(1669)),
     gender = c("male"),
-    nationality = c("Dutch"),
-    stringsAsFactors = FALSE))
-  expect_equivalent(ulan_data("Rembrandt", early_year = 1770, late_year = 1860), data.frame(
+    nationality = c("Dutch")))
+  expect_equivalent(ulan_data("Rembrandt", early_year = 1770, late_year = 1860), data_frame(
     name = c("Rembrandt"),
-    id = c(500019719),
+    id = as.integer(c(500019719)),
     pref_name = c("Peale, Rembrandt"),
-    birth_year = c(1778),
-    death_year = c(1860),
+    birth_year = as.integer(c(1778)),
+    death_year = as.integer(c(1860)),
     gender = c("male"),
-    nationality = c("American"),
-    stringsAsFactors = FALSE))
-  expect_equivalent(ulan_data("Rembrandt", early_year = 1880, late_year = 1930), data.frame(
+    nationality = c("American")))
+  expect_equivalent(ulan_data("Rembrandt", early_year = 1880, late_year = 1930), data_frame(
     name = c("Rembrandt"),
-    id = c(500006691),
+    id = as.integer(c(500006691)),
     pref_name = c("Bugatti, Rembrandt"),
-    birth_year = c(1884),
-    death_year = c(1916),
+    birth_year = as.integer(c(1884)),
+    death_year = as.integer(c(1916)),
     gender = c("male"),
-    nationality = c("Italian"),
-    stringsAsFactors = FALSE))
+    nationality = c("Italian")))
 })
