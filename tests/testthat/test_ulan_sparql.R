@@ -2,10 +2,9 @@ library(ulanr)
 context("SPARQL ID results")
 
 test_that("no matching results returns NA", {
-  expect_equal(ulan_id("asfjk"), c(NA))
-  expect_warning(ulan_id("asfjk"))
-  expect_equal(ulan_id(c("Rembrandt van Rijn", NA)), c(500011051, NA))
-  expect_equal(ulan_id(""), c(NA))
+  expect_equal(is.na(ulan_id("asfjk", method = "sparql")), is.na(NA))
+  expect_warning(ulan_id("asfjk", method = "sparql"))
+  expect_equal(is.na(ulan_id(c(""), method = "sparql")), is.na(NA))
 })
 
 test_that("ulan_id handles a vector of names", {
