@@ -1,126 +1,32 @@
 library(ulanr)
 library(dplyr, warn.conflicts = FALSE)
-context("SPARQL ID results")
-
-test_that("no matching results returns NA", {
-  expect_equal(is.na(ulan_id("asfjk", method = "sparql")), is.na(NA))
-  expect_warning(ulan_id("asfjk", method = "sparql"))
-  expect_equal(is.na(ulan_id(c(""), method = "sparql")), is.na(NA))
-})
-
-test_that("ulan_id handles a vector of names", {
-  expect_equal(ulan_id(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), method = "sparql"), c(500011051, 500006788))
-})
-
-test_that("multiple names can be queried using one year range", {
-  expect_equal(ulan_id(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), c(500011051, 500006788), method = "sparql")
-})
-
-test_that("ulan_id returns correct name", {
-  expect_equal(ulan_id("Rembrandt van Rijn", method = "sparql"), 500011051)
-  expect_equal(ulan_id("Hendrik Hondius (I)", method = "sparql"), 500006788)
-})
-
-test_that("ulan_id date restrictions work", {
-  expect_equal(ulan_id("Rembrandt", early_year = 1600, late_year = 1670, method = "sparql"), 500011051)
-  expect_equal(ulan_id("Rembrandt", early_year = 1770, late_year = 1860, method = "sparql"), 500019719)
-  expect_equal(ulan_id("Rembrandt", early_year = 1880, late_year = 1930, method = "sparql"), 500006691)
-})
-
 context("SPARQL data results")
 
+na_df <- function(name) {
+  data_frame(
+    name = name,
+    id = c(NA),
+    pref_name = c(NA),
+    birth_year = c(NA),
+    death_year = c(NA),
+    gender = c(NA),
+    nationality = c(NA),
+    score = c(NA))
+}
+
+val_df <- data_frame(
+  name = character(1),
+  id = integer(1),
+  pref_name = character(1),
+  birth_year = integer(1),
+  death_year = integer(1),
+  gender = character(1),
+  nationality = character(1),
+  score = double(1))
+
 test_that("no matching results returns NA", {
-  expect_equivalent(is.na(ulan_data("asfjk", method = "sparql")), is.na(data_frame(
-    name = c("asfjk"),
-    id = c(NA),
-    pref_name = c(NA),
-    birth_year = c(NA),
-    death_year = c(NA),
-    gender = c(NA),
-    nationality = c(NA))))
-  expect_warning(ulan_data("asfjk", method = "sparql"))
-  expect_equivalent(is.na(ulan_data(c("Rembrandt van Rijn", NA), method = "sparql")), is.na(data_frame(
-    name = c("Rembrandt van Rijn", NA),
-    id = c(500011051, NA),
-    pref_name = c("Rembrandt van Rijn", NA),
-    birth_year = c(1606, NA),
-    death_year = c(1669, NA),
-    gender = c("male", NA),
-    nationality = c("Dutch", NA))))
-  expect_equivalent(is.na(ulan_data("", method = "sparql")), is.na(data_frame(
-    name = c(""),
-    id = c(NA),
-    pref_name = c(NA),
-    birth_year = c(NA),
-    death_year = c(NA),
-    gender = c(NA),
-    nationality = c(NA))))
-})
-
-test_that("ulan_data handles a vector of names", {
-  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)")), data_frame(
-    name = c("Rembrandt van Rijn", "Hendrick Hondius (I)"),
-    id = as.integer(c(500011051, 500006788)),
-    pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
-    birth_year = as.integer(c(1606, 1573)),
-    death_year = as.integer(c(1669, 1650)),
-    gender = c("male", "male"),
-    nationality = c("Dutch", "Dutch")))
-})
-
-test_that("multiple names can be queried using one year range", {
-  expect_equivalent(ulan_data(c("Rembrandt van Rijn", "Hendrick Hondius (I)"), early_year = 1500, late_year = 1700), data_frame(
-    name = c("Rembrandt van Rijn", "Hendrick Hondius (I)"),
-    id = as.integer(c(500011051, 500006788)),
-    pref_name = c("Rembrandt van Rijn", "Hondius, Hendrik, I"),
-    birth_year = as.integer(c(1606, 1573)),
-    death_year = as.integer(c(1669, 1650)),
-    gender = c("male", "male"),
-    nationality = c("Dutch", "Dutch")))
-})
-
-test_that("ulan_data returns correct name", {
-  expect_equivalent(ulan_data("Rembrandt van Rijn"), data_frame(
-    name = c("Rembrandt van Rijn"),
-    id = as.integer(c(500011051)),
-    pref_name = c("Rembrandt van Rijn"),
-    birth_year = as.integer(c(1606)),
-    death_year = as.integer(c(1669)),
-    gender = c("male"),
-    nationality = c("Dutch")))
-  expect_equivalent(ulan_data("Hendrik Hondius (I)"), data_frame(
-    name = c("Hendrik Hondius (I)"),
-    id = as.integer(c(500006788)),
-    pref_name = c("Hondius, Hendrik, I"),
-    birth_year = as.integer(c(1573)),
-    death_year = as.integer(c(1650)),
-    gender = c("male"),
-    nationality = c("Dutch")))
-})
-
-test_that("ulan_data date restrictions work", {
-  expect_equivalent(ulan_data("Rembrandt", early_year = 1600, late_year = 1670), data_frame(
-    name = c("Rembrandt"),
-    id = as.integer(c(500011051)),
-    pref_name = c("Rembrandt van Rijn"),
-    birth_year = as.integer(c(1606)),
-    death_year = as.integer(c(1669)),
-    gender = c("male"),
-    nationality = c("Dutch")))
-  expect_equivalent(ulan_data("Rembrandt", early_year = 1770, late_year = 1860), data_frame(
-    name = c("Rembrandt"),
-    id = as.integer(c(500019719)),
-    pref_name = c("Peale, Rembrandt"),
-    birth_year = as.integer(c(1778)),
-    death_year = as.integer(c(1860)),
-    gender = c("male"),
-    nationality = c("American")))
-  expect_equivalent(ulan_data("Rembrandt", early_year = 1880, late_year = 1930), data_frame(
-    name = c("Rembrandt"),
-    id = as.integer(c(500006691)),
-    pref_name = c("Bugatti, Rembrandt"),
-    birth_year = as.integer(c(1884)),
-    death_year = as.integer(c(1916)),
-    gender = c("male"),
-    nationality = c("Italian")))
+  expect_equivalent(lapply(ulan_match("asfjk", method = "sparql"), is.na), list(is.na(na_df("asfjk"))))
+  expect_warning(ulan_match("asfjk", method = "sparql"))
+  expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn", NA), method = "sparql", max_results = 1), is.na), lapply(list(val_df, na_df(NA)), is.na))
+  expect_equivalent(lapply(ulan_match("", method = "sparql"), is.na), lapply(list(na_df("")), is.na))
 })

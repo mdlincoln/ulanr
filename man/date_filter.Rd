@@ -6,14 +6,6 @@
 \usage{
 date_filter(inclusive, early_year, late_year)
 }
-\arguments{
-\item{inclusive}{Logical. Should life dates be filtered inclusive of the
-[early_year, late_year] range?}
-
-\item{early_year}{Match only artists who died after this year.}
-
-\item{late_year}{Match only artists who were born before this year.}
-}
 \description{
 Constructs a portion of the SPARQL query to filter artists based on life
 dates

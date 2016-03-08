@@ -55,7 +55,8 @@ validate_input <- function(names, early_year, late_year, inclusive, max_results)
 #'   Depending on the query, the actual number of results returned may be lower.
 #'   When \code{method = "sparql"} is used, values over 50 will be ignored.
 #'
-#' @return A data frame with 7 columns and no more than \code{max_results} rows:
+#' @return A list of data.frames, one per submitted name, with 7 columns and no
+#'   more than \code{max_results} rows:
 #' \describe{
 #' \item{\code{name}}{character. Original input vector}
 #' \item{\code{id}}{integer. ULAN id}
@@ -64,11 +65,14 @@ validate_input <- function(names, early_year, late_year, inclusive, max_results)
 #' \item{\code{death_year}}{integer. Artist death year, if assigned}
 #' \item{\code{gender}}{character. Artist gender, if assigned.}
 #' \item{\code{nationality}}{character. Artist nationality, if assigned.}
-#' \item{\code{score}}{numeric. The score of the result. When \code(method =
-#' "sparql"), this is the Lucene index score (a higher score for a closer
-#' match). When \code(method = "local"), it will instead be a scaled string
+#' \item{\code{score}}{numeric. The score of the result. When \code{method =
+#' "sparql"}, this is the Lucene index score (a higher score for a closer
+#' match). When \code{method = "local"}, it will instead be a scaled string
 #' distance score.}
 #' }
+#'
+#' Unmatched names will return a data.frame with NAs for all values save
+#' \code{name}.
 #'
 #' @note \code{method = "sparql"} requires an internet connection.
 #'
@@ -98,10 +102,16 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql_data(names, early_year, late_year, inclusive, progress_bar)
+    ulan_sparql_match(names, early_year, late_year, inclusive, max_results)
   } else if(method == "stringdist") {
     # Check that ulanrdata is installed
     check_ulanrdata_package()
-    ulan_stringdist_data(names, early_year, late_year, inclusive, progress_bar)
+    ulan_stringdist_match(names, early_year, late_year, inclusive, max_results)
   }
+}
+
+# Display a progress bar? Returns true if the session is interactive and there
+# are more thatn 5 names to match
+use_pb <- function(names) {
+  all(interactive(), length(names) > 5)
 }

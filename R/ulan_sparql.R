@@ -2,11 +2,6 @@
 #'
 #' Constructs a portion of the SPARQL query to filter artists based on life
 #' dates
-#'
-#' @param inclusive Logical. Should life dates be filtered inclusive of the
-#'   [early_year, late_year] range?
-#' @param early_year Match only artists who died after this year.
-#' @param late_year Match only artists who were born before this year.
 date_filter <- function(inclusive, early_year, late_year) {
   if(inclusive) {
     paste0("FILTER(?birth_year >= '", early_year, "'^^xsd:gYear && ?death_year <= '",
@@ -20,91 +15,10 @@ date_filter <- function(inclusive, early_year, late_year) {
 #' Format a SPARQL query as a URL
 #'
 #' Properly escapes the query to send to the Getty SPARQL endpoint
-#'
-#' @param query Query string.
-#'
-#' @return An atomic character vector.
 sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
   escaped_query <- URLencode(query, reserved = TRUE)
   paste0(endpoint, ".csv?query=", escaped_query)
-}
-
-#' Search for a matching ULAN id by using the Getty's live SPARQL endpoint and
-#' its Lucene index.
-#'
-#' This internal function implements the \code{method = "sparql"} option for
-#' \link{ulan_id}. See that funciton for documentation.
-#'
-#' @param name A character string of an artist's name
-#' @param early_year Match only artists who died after this year.
-#' @param late_year Match only artists who were born before this year.
-#' @param inclusive Logical. Should life dates be filtered inclusive of the
-#'   [early_year, late_year] range?
-ulan_sparql_id_handler <- function(name, early_year, late_year, inclusive) {
-
-  # Return NA for missing or empty values of name
-  if(is.null(name))
-    return(NA)
-  if(is.na(name))
-    return(NA)
-  if(name == "")
-    return(NA)
-
-  # Strip punctuation from name string
-  name <- tolower(gsub("[[:punct:]]", "", name))
-
-  # Construct the query
-  query_string <- paste0("
-    SELECT ?id
-    WHERE {
-    ?artist skos:inScheme ulan: ;
-      luc:term '", name, "' ;
-      rdf:type gvp:PersonConcept ;
-      dc:identifier ?id .
-
-    ?artist foaf:focus [gvp:biographyPreferred ?bio] .
-    ?bio gvp:estStart ?birth_year ;
-         gvp:estEnd ?death_year .",
-    date_filter(inclusive, early_year, late_year),
-    "} LIMIT 1")
-
-  # Fire the query to the Getty SPARQL endpoint and parse the results
-  results <- readr::read_csv(sparql_url(query_string))
-
-  if(nrow(results) == 0) {
-    warning("No matches found for the following name: ", name)
-    return(NA)
-  } else {
-    results[1,1]
-  }
-}
-
-#' Iterate the SPARQL method over the provided vectors
-#'
-#' This internal function maps the inputs from the generic \link{ulan_id}
-#' function to the SPARQL implementation
-#'
-#' @param names A character string of an artist's name
-#' @param early_year Match only artists who died after this year.
-#' @param late_year Match only artists who were born before this year.
-#' @param inclusive Logical. Should life dates be filtered inclusive of the
-#'   [early_year, late_year] range?
-#' @param progress_bar Display a progress bar for long vectors.
-ulan_sparql_id <- function(names, early_year, late_year, inclusive, progress_bar) {
-  # For long queries or if explicitly set, create and increment txtProgressBar
-  if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
-    pb <- txtProgressBar(min = 0, max = length(names), style = 3)
-    ids <- as.integer(mapply(function(a, b, c, d) {
-      setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_sparql_id_handler(a, b, c, d)},
-      names, early_year, late_year, inclusive, SIMPLIFY = TRUE, USE.NAMES = FALSE))
-    close(pb)
-    return(ids)
-  } else {
-    as.integer(mapply(function(a, b, c, d) ulan_sparql_id_handler(a, b, c, d),
-           names, early_year, late_year, inclusive,SIMPLIFY = TRUE, USE.NAMES = FALSE))
-  }
 }
 
 #' Search for a matching ULAN id and its associated databy using the Getty's
@@ -118,7 +32,7 @@ ulan_sparql_id <- function(names, early_year, late_year, inclusive, progress_bar
 #' @param late_year Match only artists who were born before this year.
 #' @param inclusive Logical. Should life dates be filtered inclusive of the
 #'   [early_year, late_year] range?
-ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
+ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results) {
 
   # Helper function to construct a tidy dataframe from the list returned from
   # the SPARQL query. The first column is the input name. If no results are
@@ -127,7 +41,7 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
     if("data.frame" %in% class(sparql_results)) {
       sparql_results$name <- name
       sparql_results$id <- as.integer(sparql_results$id)
-      dplyr::select(sparql_results, name, id, pref_name, birth_year, death_year, gender, nationality)
+      dplyr::select(sparql_results, name, id, pref_name, birth_year, death_year, gender, nationality, score)
     } else {
       data.frame(
         name = name,
@@ -136,7 +50,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
         birth_year = NA,
         death_year = NA,
         gender = NA,
-        nationality = NA
+        nationality = NA,
+        score = NA
       )
     }
   }
@@ -148,12 +63,16 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
   # Strip punctuation from name string
   strip_name <- tolower(gsub("[[:punct:]]", "", name))
 
+  # Limit max results
+  sparql_limit <- ifelse(max_results > 50, 50, max_results)
+
   # Construct the query
   query_string <- paste0("
-    SELECT ?id ?pref_name ?birth_year ?death_year ?gender ?nationality
+    SELECT ?id ?pref_name ?birth_year ?death_year ?gender ?nationality ?score
     WHERE {
       ?artist skos:inScheme ulan: ;
         luc:term '", strip_name, "' ;
+        luc:score ?score ;
         rdf:type gvp:PersonConcept ;
         dc:identifier ?id ;
         gvp:prefLabelGVP [gvp:term ?pref_name] .
@@ -170,7 +89,7 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
       OPTIONAL {
         ?focus gvp:nationalityPreferred [gvp:prefLabelGVP [gvp:term ?nationality]] .
       }
-    } LIMIT 1")
+    } LIMIT ", sparql_limit)
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
   results <- readr::read_csv(sparql_url(query_string))
@@ -189,28 +108,18 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
 #'
 #' This internal function maps the inputs from the generic \link{ulan_data}
 #' function to the SPARQL implementation
-#'
-#' @param names A character string of an artist's name
-#' @param early_year Match only artists who died after this year.
-#' @param late_year Match only artists who were born before this year.
-#' @param inclusive Logical. Should life dates be filtered inclusive of the
-#'   [early_year, late_year] range?
-#' @param progress_bar Display a progress bar for long vectors.
-ulan_sparql_data <- function(names, early_year, late_year, inclusive, progress_bar) {
+ulan_sparql_match <- function(names, early_year, late_year, inclusive, max_results) {
   # For long queries or if explicitly set, create and increment txtProgressBar
-  if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
+  if(use_pb(names)) {
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
-    ids <- mapply(function(a, b, c, d) {
+    ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_sparql_data_handler(a, b, c, d)},
-      names, early_year, late_year, inclusive, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+      ulan_sparql_match_handler(a, b, c, inclusive, max_results)},
+      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     close(pb)
-    # Bind all returned dataframes together and include the original input vector
-    dplyr::bind_rows(ids)
   } else {
-    ids <- mapply(function(a, b, c, d) ulan_sparql_data_handler(a, b, c, d),
-                  names, early_year, late_year, inclusive, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-    # Bind all returned dataframes together and include the original input vector
-    dplyr::bind_rows(ids)
+    ids <- mapply(function(a, b, c) ulan_sparql_match_handler(a, b, c, inclusive, max_results), names, early_year, late_year,
+      SIMPLIFY = FALSE, USE.NAMES = FALSE)
   }
+  return(ids)
 }

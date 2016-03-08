@@ -4,7 +4,7 @@
 \alias{validate_input}
 \title{Validate input variables}
 \usage{
-validate_input(names, early_year, late_year, inclusive)
+validate_input(names, early_year, late_year, inclusive, max_results)
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
