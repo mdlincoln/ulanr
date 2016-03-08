@@ -153,7 +153,7 @@ ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = T
 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
-    ulan_sparql_data(names, early_year, late_year, progress_bar)
+    ulan_sparql_data(names, early_year, late_year, inclusive, progress_bar)
   } else if(method == "stringdist") {
     # Check that ulanrdata is installed
     check_ulanrdata_package()
