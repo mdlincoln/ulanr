@@ -29,7 +29,7 @@ test_that("ulan_id date restrictions work", {
 context("SPARQL data results")
 
 test_that("no matching results returns NA", {
-  expect_equivalent(ulan_data("asfjk"), data.frame(
+  expect_equivalent(is.na(ulan_data("asfjk", method = "sparql")), is.na(data.frame(
     name = c("asfjk"),
     id = c(NA),
     pref_name = c(NA),
@@ -37,9 +37,9 @@ test_that("no matching results returns NA", {
     death_year = c(NA),
     gender = c(NA),
     nationality = c(NA),
-    stringsAsFactors = FALSE))
-  expect_warning(ulan_data("asfjk"))
-  expect_equivalent(ulan_data(c("Rembrandt van Rijn", NA)), data.frame(
+    stringsAsFactors = FALSE)))
+  expect_warning(ulan_data("asfjk", method = "sparql"))
+  expect_equivalent(is.na(ulan_data(c("Rembrandt van Rijn", NA), method = "sparql")), is.na(data.frame(
     name = c("Rembrandt van Rijn", NA),
     id = c(500011051, NA),
     pref_name = c("Rembrandt van Rijn", NA),
@@ -47,8 +47,8 @@ test_that("no matching results returns NA", {
     death_year = c(1669, NA),
     gender = c("male", NA),
     nationality = c("Dutch", NA),
-    stringsAsFactors = FALSE))
-  expect_equivalent(ulan_data(""), data.frame(
+    stringsAsFactors = FALSE)))
+  expect_equivalent(is.na(ulan_data("", method = "sparql")), is.na(data.frame(
     name = c(""),
     id = c(NA),
     pref_name = c(NA),
@@ -56,7 +56,7 @@ test_that("no matching results returns NA", {
     death_year = c(NA),
     gender = c(NA),
     nationality = c(NA),
-    stringsAsFactors = FALSE))
+    stringsAsFactors = FALSE)))
 })
 
 test_that("ulan_data handles a vector of names", {
