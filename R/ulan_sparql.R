@@ -17,6 +17,19 @@ date_filter <- function(inclusive, early_year, late_year) {
   }
 }
 
+#' Format a SPARQL query as a URL
+#'
+#' Properly escapes the query to send to the Getty SPARQL endpoint
+#'
+#' @param query Query string.
+#'
+#' @return An atomic character vector.
+sparql_url <- function(query) {
+  endpoint <- "http://vocab.getty.edu/sparql"
+  escaped_query <- URLencode(query, reserved = TRUE)
+  paste0(endpoint, ".csv?query=", escaped_query)
+}
+
 #' Search for a matching ULAN id by using the Getty's live SPARQL endpoint and
 #' its Lucene index.
 #'
@@ -57,15 +70,13 @@ ulan_sparql_id_handler <- function(name, early_year, late_year, inclusive) {
     "} LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
-  results <- jsonlite::fromJSON(
-    RCurl::getURL(paste0("http://vocab.getty.edu/sparql.json?query=",
-                         RCurl::curlEscape(query_string))))
+  results <- readr::read_csv(sparql_url(query_string))
 
-  if(length(results$results$bindings) == 0) {
+  if(nrow(results) == 0) {
     warning("No matches found for the following name: ", name)
     return(NA)
   } else {
-    as.integer(results$results$bindings$id$value)
+    results[1,1]
   }
 }
 
@@ -113,44 +124,24 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
   # the SPARQL query. The first column is the input name. If no results are
   # returned, then the remaining columns will all be "NA"
   construct_results <- function(sparql_results) {
-
-    check_missing <- function(list_unit) {
-      if(is.null(list_unit)) {
-        return(NA)
-      } else {
-        return(list_unit)
-      }
-    }
-
-    if(class(sparql_results) != "list") {
-      data.frame(
+    if("data.frame" %in% class(sparql_results)) {
+      sparql_results$name <- name
+      dplyr::select(sparql_results, name, id, pref_name, startdate, enddate, gender, nationality)
+    } else {
+      data_frame(
         name = name,
         id = NA,
         pref_name = NA,
-        birth_year = NA,
-        death_year = NA,
+        startdate = NA,
+        enddate = NA,
         gender = NA,
-        nationality = NA,
-        stringsAsFactors = FALSE)
-    } else {
-      data.frame(
-        name = as.character(check_missing(name)),
-        id = as.integer(check_missing(results$results$bindings$id$value)),
-        pref_name = as.character(check_missing(results$results$bindings$pref_name$value)),
-        birth_year = as.integer(check_missing(results$results$bindings$startdate$value)),
-        death_year = as.integer(check_missing(results$results$bindings$enddate$value)),
-        gender = as.character(check_missing(results$results$bindings$gender$value)),
-        nationality = as.character(check_missing(results$results$bindings$nationality$value)),
-        stringsAsFactors = FALSE)
+        nationality = NA
+      )
     }
   }
 
   # Return NA for missing or empty values of name
-  if(is.null(name))
-    return(construct_results(NA))
-  if(is.na(name))
-    return(construct_results(NA))
-  if(name == "")
+  if(any(is.null(name), is.na(name), name == ""))
     return(construct_results(NA))
 
   # Strip punctuation from name string
@@ -169,7 +160,7 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
       ?artist foaf:focus ?focus .
       ?focus gvp:biographyPreferred ?bio .
       ?bio gvp:estStart ?startdate ;
-        gvp:estEnd ?enddate .",
+        gvp:estEnd ?enddate . ",
       date_filter(inclusive, early_year, late_year),
       "OPTIONAL {
         ?bio schema:gender [gvp:prefLabelGVP [gvp:term ?gender]] .
@@ -181,11 +172,9 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
     } LIMIT 1")
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
-  results <- jsonlite::fromJSON(
-    RCurl::getURL(paste0("http://vocab.getty.edu/sparql.json?query=",
-                         RCurl::curlEscape(query_string))))
+  results <- readr::read_csv(sparql_url(query_string))
 
-  if(length(results$results$bindings) == 0) {
+  if(nrow(results) == 0) {
     warning("No matches found for the following name: ", name)
     construct_results(NA)
   } else {

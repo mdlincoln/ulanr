@@ -10,8 +10,7 @@ Description: Matches variant spellings of artist names to canonical ids by
 License: MIT + file LICENSE
 Imports:
   dplyr,
-  jsonlite,
-  RCurl
+  readr
 LazyData: TRUE
 Suggests:
   testthat,
