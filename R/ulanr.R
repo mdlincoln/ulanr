@@ -33,11 +33,6 @@ validate_input <- function(names, early_year, late_year, inclusive, method, max_
     stop("inclusive must be a logical vector")
 }
 
-# Helper when method is not recgonized
-unrecognized_method <- function() {
-  stop("Method ", method, " is not recognized. Try ?ulan_id for help.")
-}
-
 #' Match names to the Getty ULAN
 #'
 #' Queries the Getty ULAN to find matching entries for a given string. You
@@ -93,6 +88,8 @@ unrecognized_method <- function() {
 #'                  late_year = c(1700, 2000), method = "sparql")}
 ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 5) {
 
+  match.arg(method)
+
   # Check names, early_year, and late_year for valid class, length, and value
   validate_input(names, early_year, late_year, inclusive, method, max_results)
 
@@ -114,7 +111,5 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
     # Check that ulanrdata is installed
     check_ulanrdata_package()
     ulan_stringdist_data(names, early_year, late_year, inclusive, progress_bar)
-  } else {
-    unrecognized_method()
   }
 }
