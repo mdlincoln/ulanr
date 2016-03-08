@@ -95,15 +95,15 @@ ulan_sparql_id <- function(names, early_year, late_year, inclusive, progress_bar
   # For long queries or if explicitly set, create and increment txtProgressBar
   if((progress_bar == "default" & length(names) >= 50) | progress_bar == TRUE) {
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
-    ids <- mapply(function(a, b, c, d) {
+    ids <- as.integer(mapply(function(a, b, c, d) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
       ulan_sparql_id_handler(a, b, c, d)},
-      names, early_year, late_year, inclusive, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+      names, early_year, late_year, inclusive, SIMPLIFY = TRUE, USE.NAMES = FALSE))
     close(pb)
     return(ids)
   } else {
-    mapply(function(a, b, c, d) ulan_sparql_id_handler(a, b, c, d),
-           names, early_year, late_year, inclusive,SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    as.integer(mapply(function(a, b, c, d) ulan_sparql_id_handler(a, b, c, d),
+           names, early_year, late_year, inclusive,SIMPLIFY = TRUE, USE.NAMES = FALSE))
   }
 }
 
