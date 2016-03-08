@@ -9,10 +9,10 @@
 #' @param late_year Match only artists who were born before this year.
 date_filter <- function(inclusive, early_year, late_year) {
   if(inclusive) {
-    paste0("FILTER(?startdate >= '", early_year, "'^^xsd:gYear && ?enddate <= '",
+    paste0("FILTER(?birth_year >= '", early_year, "'^^xsd:gYear && ?death_year <= '",
            late_year, "'^^xsd:gYear)")
   } else {
-    paste0("FILTER(?startdate <= '", late_year, "'^^xsd:gYear && ?enddate >= '",
+    paste0("FILTER(?birth_year <= '", late_year, "'^^xsd:gYear && ?death_year >= '",
            early_year, "'^^xsd:gYear)")
   }
 }
@@ -64,8 +64,8 @@ ulan_sparql_id_handler <- function(name, early_year, late_year, inclusive) {
       dc:identifier ?id .
 
     ?artist foaf:focus [gvp:biographyPreferred ?bio] .
-    ?bio gvp:estStart ?startdate ;
-         gvp:estEnd ?enddate .",
+    ?bio gvp:estStart ?birth_year ;
+         gvp:estEnd ?death_year .",
     date_filter(inclusive, early_year, late_year),
     "} LIMIT 1")
 
@@ -126,14 +126,15 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
   construct_results <- function(sparql_results) {
     if("data.frame" %in% class(sparql_results)) {
       sparql_results$name <- name
-      dplyr::select(sparql_results, name, id, pref_name, startdate, enddate, gender, nationality)
+      sparql_results$id <- as.integer(sparql_results$id)
+      dplyr::select(sparql_results, name, id, pref_name, birth_year, death_year, gender, nationality)
     } else {
-      data_frame(
+      data.frame(
         name = name,
         id = NA,
         pref_name = NA,
-        startdate = NA,
-        enddate = NA,
+        birth_year = NA,
+        death_year = NA,
         gender = NA,
         nationality = NA
       )
@@ -149,7 +150,7 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
 
   # Construct the query
   query_string <- paste0("
-    SELECT ?id ?pref_name ?startdate ?enddate ?gender ?nationality
+    SELECT ?id ?pref_name ?birth_year ?death_year ?gender ?nationality
     WHERE {
       ?artist skos:inScheme ulan: ;
         luc:term '", strip_name, "' ;
@@ -159,8 +160,8 @@ ulan_sparql_data_handler <- function(name, early_year, late_year, inclusive) {
 
       ?artist foaf:focus ?focus .
       ?focus gvp:biographyPreferred ?bio .
-      ?bio gvp:estStart ?startdate ;
-        gvp:estEnd ?enddate . ",
+      ?bio gvp:estStart ?birth_year ;
+        gvp:estEnd ?death_year . ",
       date_filter(inclusive, early_year, late_year),
       "OPTIONAL {
         ?bio schema:gender [gvp:prefLabelGVP [gvp:term ?gender]] .
