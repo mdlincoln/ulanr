@@ -9,28 +9,20 @@
 #' @param late_year Match only artists who were born before this year.
 #' @param inclusive Logical. Should life dates be filtered inclusive of the
 #'   [early_year, late_year] range?
-validate_input <- function(names, early_year, late_year, inclusive, method, max_results) {
+validate_input <- function(names, early_year, late_year, inclusive, max_results) {
   # Check names validity
-  if(class(names) != "character")
-    stop("names should be a character vector")
+  stopifnot(is.character(names))
+
+  # early_year and late_year must be numeric
+  stopifnot(all(is.numeric(early_year), is.numeric(late_year)))
 
   # Check if early_year and late_year are compatible
-  if(length(early_year) != length(late_year))
-    stop("early_year and late_year must be of equal length")
+  stopifnot(length(early_year) == length(late_year))
 
-  # Check early_year validity
-  if(class(early_year) != "numeric")
-    stop("early_year should be a numeric vector")
-  if(length(early_year) != 1 & length(early_year) != length(names))
-    stop("early_year must be the same length as names, or length 1")
-
-  # Check late_year validity
-  if(class(late_year) != "numeric")
-    stop("late_year should be a numeric vector")
+  stopifnot(length(early_year) == 1 | length(early_year) == length(names))
 
   # Check inclusive validity
-  if(class(inclusive) != "logical")
-    stop("inclusive must be a logical vector")
+  stopifnot(is.logical(inclusive))
 }
 
 #' Match names to the Getty ULAN
@@ -91,7 +83,7 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   match.arg(method)
 
   # Check names, early_year, and late_year for valid class, length, and value
-  validate_input(names, early_year, late_year, inclusive, method, max_results)
+  validate_input(names = names, early_year = early_year, late_year = late_year, inclusive = inclusive, max_results = max_results)
 
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
