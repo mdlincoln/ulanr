@@ -24,7 +24,7 @@
 #'   endpoint, relying on its Lucene index for finding close matches, while
 #'   \code{local} instead uses string distance measures based on a local table
 #'   of ULAN entries.
-#' @param max_results. The maximum number of results to return. Defaults to 5.
+#' @param max_results The maximum number of results to return. Defaults to 5.
 #'   Depending on the query, the actual number of results returned may be lower.
 #'   When \code{method = "sparql"} is used, values over 50 will be ignored.
 #'

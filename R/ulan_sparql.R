@@ -33,13 +33,13 @@ sparql_url <- function(query) {
 #' This internal function implements the \code{method = "sparql"} option for
 #' \link{ulan_data}. See that funciton for documentation.
 #'
-#' @param name A character string of an artist's name
-#' @param early_year Match only artists who died after this year.
-#' @param late_year Match only artists who were born before this year.
-#' @param inclusive Logical. Should life dates be filtered inclusive of the
-#'   [early_year, late_year] range?
-#' @param max_results The maximum number of results to return
-ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results) {
+#' @param name Passed from ulan_match.
+#' @param early_year Passed from ulan_match.
+#' @param late_year Passed from ulan_match.
+#' @param inclusive Passed from ulan_match.
+#' @param max_results Passed from ulan_match.
+#' @param ... ignores stringdist_ops argument, if present.
+ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results, ...) {
 
   # Return NA for missing or empty values of name
   if(any(is.null(name), is.na(name), name == ""))
