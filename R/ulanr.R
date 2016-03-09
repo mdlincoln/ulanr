@@ -3,12 +3,6 @@
 #' A helper function that validates the classes and lengths of inputs to
 #' uland_id and ulan_data functions.  Will stop() code if there are any invalid
 #' variable types
-#'
-#' @param names A character vector of names to match to a canonical ULAN id.
-#' @param early_year Match only artists who died after this year.
-#' @param late_year Match only artists who were born before this year.
-#' @param inclusive Logical. Should life dates be filtered inclusive of the
-#'   [early_year, late_year] range?
 validate_input <- function(names, early_year, late_year, inclusive, max_results) {
   # Check names validity
   stopifnot(is.character(names))
