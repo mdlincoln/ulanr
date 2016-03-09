@@ -14,7 +14,8 @@ Imports:
 LazyData: TRUE
 Suggests:
   testthat,
-  ulanrdata
+  ulanrdata,
+  devtools
 LazyData: TRUE
 URL: https://github.com/mdlincoln/ulanr
 BugReports: https://github.com/mdlincoln/ulanr/issues
