@@ -104,3 +104,16 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   }
   return(ids)
 }
+
+#' Return a vector of matching ULAN IDs
+#'
+#' This function is a wrapper around \link{ulan_match} that simply returns a
+#' vector of the top match ID for each name given (as if \code{max_results} were
+#' 1).
+#'
+#' @inheritParams ulan_match
+#' @export
+ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
+  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1)
+  dplyr::bind_rows(matches)$id
+}
