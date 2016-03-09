@@ -14,14 +14,14 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
   # Should life dates be a subset of early_year and late_year, or merely
   # intersecting with early_year and late_year?
   if(inclusive) {
-    score_table <- dplyr::filter(ulanrdata::query_table, birth_year <= late_year & death_year >= early_year)
+    score_table <- dplyr::filter_(ulanrdata::query_table, .dots = list(~birth_year <= late_year & death_year >= early_year))
   } else {
-    score_table <- dplyr::filter(ulanrdata::query_table, birth_year >= early_year & death_year <= late_year)
+    score_table <- dplyr::filter_(ulanrdata::query_table, .dots = list(~birth_year >= early_year & death_year <= late_year))
   }
 
   # Look for exact matches - if we find them, then it's not necessary to do any
   # costly string distance calculations
-  match_tries <- dplyr::filter(score_table, alt_name == name)
+  match_tries <- dplyr::filter_(score_table, .dots = list(~alt_name == name))
 
   if(nrow(match_tries) > 0) {
     match_tries$score <- 10
@@ -29,11 +29,12 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
   }
 
   # Calculate string distance scores, rescaling scores 0-10
-  score_table <- dplyr::mutate(score_table, score = stringdist::stringdist(alt_name, name))
-  score_table <- dplyr::mutate(score_table, score = 10/(score + 0.1))
+  score_table$score <- stringdist::stringdist(name, score_table$alt_name)
+  score_table$score <- 10/(score_table$score + 0.1)
 
   # Sort by inverse score
-  score_table <- dplyr::distinct(dplyr::arrange(score_table, desc(score)), id)
+  score_table <- dplyr::distinct_(dplyr::arrange_(
+    score_table, lazyeval::interp(~dplyr::desc(col), col = as.name("score"))), "id")
 
   return(score_table)
 }
@@ -60,7 +61,7 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
   if(is.null(nrow(score_table)) | nrow(score_table) == 0 | score_table$score[1] < score_cutoff) {
     construct_results(results = NA, name = name)
   } else {
-    score_table <- dplyr::slice(score_table, 1:max_results)
+    score_table <- dplyr::slice_(score_table, .dots = list(1:max_results))
     construct_results(results = score_table)
   }
 }

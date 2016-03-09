@@ -18,6 +18,6 @@ construct_results <- function(results, name = NULL) {
       nationality = NA_character_,
       score = NA_real_)
   } else {
-    dplyr::select(results, id, pref_name, birth_year, death_year, gender, nationality, score)
+    dplyr::select_(results, "id", "pref_name", "birth_year", "death_year", "gender", "nationality", "score")
   }
 }

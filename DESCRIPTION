@@ -10,7 +10,8 @@ License: MIT + file LICENSE
 Imports:
   dplyr,
   readr,
-  stringdist
+  stringdist,
+  lazyeval
 LazyData: TRUE
 Suggests:
   testthat,
