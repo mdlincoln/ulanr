@@ -84,7 +84,7 @@ validate_input <- function(names, early_year, late_year, inclusive, max_results)
 #'                  late_year = c(1700, 2000), method = "sparql")}
 ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 5) {
 
-  match.arg(method)
+  method <- match.arg(method)
 
   # Check names, early_year, and late_year for valid class, length, and value
   validate_input(names = names, early_year = early_year, late_year = late_year, inclusive = inclusive, max_results = max_results)
@@ -103,7 +103,7 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   # Dispatch name to query handler based on selected method
   if(method == "sparql") {
     ulan_sparql_match(names, early_year, late_year, inclusive, max_results)
-  } else if(method == "stringdist") {
+  } else if(method == "local") {
     # Check that ulanrdata is installed
     check_ulanrdata_package()
     ulan_stringdist_match(names, early_year, late_year, inclusive, max_results)
