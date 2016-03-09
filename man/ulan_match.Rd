@@ -34,15 +34,14 @@ endpoint, relying on its Lucene index for finding close matches, while
 \code{local} instead uses string distance measures based on a local table
 of ULAN entries.}
 
-\item{max_results.}{The maximum number of results to return. Defaults to 5.
+\item{max_results}{The maximum number of results to return. Defaults to 5.
 Depending on the query, the actual number of results returned may be lower.
 When \code{method = "sparql"} is used, values over 50 will be ignored.}
 }
 \value{
-A list of data.frames, one per submitted name, with 7 columns and no
+A named list of data.frames, one per submitted name, with 7 columns and no
   more than \code{max_results} rows:
 \describe{
-\item{\code{name}}{character. Original input vector}
 \item{\code{id}}{integer. ULAN id}
 \item{\code{pref_name}}{character. ULAN preferred name}
 \item{\code{birth_year}}{integer. Artist birth year, if assigned.}

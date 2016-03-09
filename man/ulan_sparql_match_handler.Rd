@@ -5,17 +5,21 @@
 \title{Search for a matching ULAN id and its associated databy using the Getty's
 live SPARQL endpoint and its Lucene index.}
 \usage{
-ulan_sparql_match_handler(name, early_year, late_year, inclusive, max_results)
+ulan_sparql_match_handler(name, early_year, late_year, inclusive, max_results,
+  ...)
 }
 \arguments{
-\item{name}{A character string of an artist's name}
+\item{name}{Passed from ulan_match.}
 
-\item{early_year}{Match only artists who died after this year.}
+\item{early_year}{Passed from ulan_match.}
 
-\item{late_year}{Match only artists who were born before this year.}
+\item{late_year}{Passed from ulan_match.}
 
-\item{inclusive}{Logical. Should life dates be filtered inclusive of the
-[early_year, late_year] range?}
+\item{inclusive}{Passed from ulan_match.}
+
+\item{max_results}{Passed from ulan_match.}
+
+\item{...}{ignores stringdist_ops argument, if present.}
 }
 \description{
 This internal function implements the \code{method = "sparql"} option for

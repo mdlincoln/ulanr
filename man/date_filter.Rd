@@ -6,6 +6,13 @@
 \usage{
 date_filter(inclusive, early_year, late_year)
 }
+\arguments{
+\item{inclusive}{Passed by ulan_sparql_match_handler.}
+
+\item{early_year}{Passed by ulan_sparql_match_handler.}
+
+\item{late_year}{Passed by ulan_sparql_match_handler.}
+}
 \description{
 Constructs a portion of the SPARQL query to filter artists based on life
 dates

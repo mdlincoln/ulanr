@@ -6,6 +6,9 @@
 \usage{
 sparql_url(query)
 }
+\arguments{
+\item{query}{Passed by ulan_sparql_match_handler.}
+}
 \description{
 Properly escapes the query to send to the Getty SPARQL endpoint
 }
