@@ -33,9 +33,11 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
 # Returns one-row data frame with artist attributes
 ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops = NULL) {
 
+  score_cutoff <- 4
+
   score_table <- ulan_stringdist_lookup(name, early_year, late_year, inclusive, stringdist_ops)
 
-  if(is.null(nrow(score_table)) | nrow(score_table) == 0) {
+  if(is.null(nrow(score_table)) | nrow(score_table) == 0 | score_table$score[1] < score_cutoff) {
     warning("No matches found for the following name: ", name)
     return(dplyr::data_frame(
       id = NA,
