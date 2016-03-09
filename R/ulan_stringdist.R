@@ -1,5 +1,13 @@
-# Run the table lookup using stringdist function, returning a data frame of all matches
-ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, stringdist_ops = NULL) {
+#' String Distance Lookup
+#'
+#' Run the table lookup using stringdist function, returning a data frame of all matches
+#'
+#' @param name
+#' @param early_year
+#' @param late_year
+#' @param inclusive
+#' @param stringdist_ops
+ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, stringdist_ops) {
   # Strip punctuation from name string
   name <- trimws(tolower(gsub("[[:punct:]]", "", name)))
 
@@ -30,7 +38,16 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
   return(score_table)
 }
 
-# Returns one-row data frame with artist attributes
+#' Handle strindist results
+#'
+#' Returns one-row data frame with artist attributes
+#'
+#' @param name
+#' @param early_year
+#' @param late_year
+#' @param inclusive
+#' @param max_results
+#' @param stringdist_ops
 ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops = NULL) {
 
   score_cutoff <- 4
@@ -54,6 +71,15 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
   }
 }
 
+#' Title
+#'
+#'
+#'
+#' @param names
+#' @param early_year
+#' @param late_year
+#' @param inclusive
+#' @param max_results
 ulan_stringdist_match <- function(names, early_year, late_year, inclusive, max_results) {
   # For long queries or if explicitly set, create and increment txtProgressBar
   if(use_pb(names)) {
