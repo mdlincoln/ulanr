@@ -3,9 +3,9 @@ library(dplyr, warn.conflicts = FALSE)
 
 context("Validate input values")
 
-test_that("NULL or NA names return NA", {
-  expect_error(ulan_match(NA))
-  expect_error(ulan_match(NULL))
+test_that("NA or empty character in names returns an error", {
+  expect_error(ulan_match(c("Rembrandt", NA)))
+  expect_error(ulan_match(c("Rembrandt", "")))
 })
 
 test_that("incorrect early_year and late_year pairings raise errors", {
@@ -41,15 +41,13 @@ context("SPARQL data results")
 test_that("no matching results returns NA", {
   expect_equivalent(lapply(ulan_match("asfjk", method = "sparql"), is.na), list("asfjk" = is.na(na_df)))
   expect_warning(ulan_match("asfjk", method = "sparql"))
-  expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn"), method = "local", max_results = 1), is.na), lapply(list("Rembrandt van Rijn" = val_df), is.na))
-  expect_equivalent(lapply(ulan_match("", method = "sparql"), is.na), lapply(list(na_df, is.na)))
+  expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn"), method = "sparql", max_results = 1), is.na), lapply(list("Rembrandt van Rijn" = val_df), is.na))
 })
 
 context("local data results")
 
 test_that("no matching results returns NA", {
-  expect_equivalent(lapply(ulan_match("asfjk", method = "local"), is.na), list(is.na(na_df)))
+  expect_equivalent(lapply(ulan_match("asfjk", method = "local"), is.na), list("asfjk" = is.na(na_df)))
   expect_warning(ulan_match("asfjk", method = "local"))
-  expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn", NA), method = "local", max_results = 1), is.na), lapply(list(val_df, na_df), is.na))
-  expect_equivalent(lapply(ulan_match("", method = "local"), is.na), lapply(list(na_df, is.na)))
+  expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn"), method = "local", max_results = 1), is.na), lapply(list("Rembrandt van Rijn" = val_df), is.na))
 })
