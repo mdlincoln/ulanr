@@ -1,9 +1,5 @@
 # Run the table lookup using stringdist function, returning a data frame of all matches
 ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, stringdist_ops = NULL) {
-  # Return NA for missing or empty values of name
-  if(any(is.null(name), is.na(name), name == ""))
-    return(NA)
-
   # Strip punctuation from name string
   name <- trimws(tolower(gsub("[[:punct:]]", "", name)))
 

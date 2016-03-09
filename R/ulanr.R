@@ -12,6 +12,8 @@
 validate_input <- function(names, early_year, late_year, inclusive, max_results) {
   # Check names validity
   stopifnot(is.character(names))
+  stopifnot(all(!is.na(names)))
+  stopifnot(all(!names == ""))
 
   # early_year and late_year must be numeric
   stopifnot(all(is.numeric(early_year), is.numeric(late_year)))
