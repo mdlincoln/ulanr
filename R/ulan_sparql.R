@@ -2,6 +2,10 @@
 #'
 #' Constructs a portion of the SPARQL query to filter artists based on life
 #' dates
+#'
+#' @param inclusive Passed by ulan_sparql_match_handler.
+#' @param early_year Passed by ulan_sparql_match_handler.
+#' @param late_year Passed by ulan_sparql_match_handler.
 date_filter <- function(inclusive, early_year, late_year) {
   if(inclusive) {
     paste0("FILTER(?birth_year >= '", early_year, "'^^xsd:gYear && ?death_year <= '",
@@ -15,6 +19,8 @@ date_filter <- function(inclusive, early_year, late_year) {
 #' Format a SPARQL query as a URL
 #'
 #' Properly escapes the query to send to the Getty SPARQL endpoint
+#'
+#' @param query Passed by ulan_sparql_match_handler.
 sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
   escaped_query <- URLencode(query, reserved = TRUE)
@@ -32,6 +38,7 @@ sparql_url <- function(query) {
 #' @param late_year Match only artists who were born before this year.
 #' @param inclusive Logical. Should life dates be filtered inclusive of the
 #'   [early_year, late_year] range?
+#' @param max_results The maximum number of results to return
 ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results) {
 
   # Helper function to construct a tidy dataframe from the list returned from
