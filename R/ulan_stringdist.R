@@ -50,6 +50,9 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
 #' @param stringdist_ops
 ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops = NULL) {
 
+  # Check that ulanrdata is installed
+  check_ulanrdata_package()
+
   score_cutoff <- 4
 
   score_table <- ulan_stringdist_lookup(name, early_year, late_year, inclusive, stringdist_ops)
@@ -69,28 +72,4 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
     score_table <- dplyr::slice(score_table, 1:max_results)
     dplyr::select(score_table, id, pref_name, birth_year, death_year, gender, nationality, score)
   }
-}
-
-#' Title
-#'
-#'
-#'
-#' @param names
-#' @param early_year
-#' @param late_year
-#' @param inclusive
-#' @param max_results
-ulan_stringdist_match <- function(names, early_year, late_year, inclusive, max_results) {
-  # For long queries or if explicitly set, create and increment txtProgressBar
-  if(use_pb(names)) {
-    pb <- txtProgressBar(min = 0, max = length(names), style = 3)
-    ids <- mapply(function(a, b, c) {
-      setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_stringdist_match_handler(a, b, c, inclusive, max_results)},
-      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
-    close(pb)
-  } else {
-    ids <- mapply(function(a, b, c) ulan_stringdist_match_handler(a, b, c, inclusive, max_results), names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
-  }
-  return(ids)
 }

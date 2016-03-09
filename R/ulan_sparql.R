@@ -108,23 +108,3 @@ ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, ma
     construct_results(results)
   }
 }
-
-#' Iterate the SPARQL method over the provided vectors
-#'
-#' This internal function maps the inputs from the generic \link{ulan_data}
-#' function to the SPARQL implementation
-ulan_sparql_match <- function(names, early_year, late_year, inclusive, max_results) {
-  # For long queries or if explicitly set, create and increment txtProgressBar
-  if(use_pb(names)) {
-    pb <- txtProgressBar(min = 0, max = length(names), style = 3)
-    ids <- mapply(function(a, b, c) {
-      setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_sparql_match_handler(a, b, c, inclusive, max_results)},
-      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
-    close(pb)
-  } else {
-    ids <- mapply(function(a, b, c) ulan_sparql_match_handler(a, b, c, inclusive, max_results), names, early_year, late_year,
-      SIMPLIFY = FALSE, USE.NAMES = TRUE)
-  }
-  return(ids)
-}

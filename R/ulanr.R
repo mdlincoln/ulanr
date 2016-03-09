@@ -86,17 +86,21 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   }
 
   # Dispatch name to query handler based on selected method
-  if(method == "sparql") {
-    ulan_sparql_match(names, early_year, late_year, inclusive, max_results)
-  } else if(method == "local") {
-    # Check that ulanrdata is installed
-    check_ulanrdata_package()
-    ulan_stringdist_match(names, early_year, late_year, inclusive, max_results)
-  }
-}
+  ulan_dispatcher <- switch(method,
+                       "local" = ulan_stringdist_match_handler,
+                       "sparql" = ulan_sparql_match_handler)
 
-# Display a progress bar? Returns true if the session is interactive and there
-# are more thatn 5 names to match
-use_pb <- function(names) {
-  all(interactive(), length(names) > 5)
+  # For long queries or if explicitly set, create and increment txtProgressBar
+  if(all(interactive(), length(names) > 5)) {
+    pb <- txtProgressBar(min = 0, max = length(names), style = 3)
+    ids <- mapply(function(a, b, c) {
+      setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
+      ulan_dispatcher(a, b, c, inclusive, max_results)},
+      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
+    close(pb)
+  } else {
+    ids <- mapply(function(a, b, c) ulan_dispatcher(a, b, c, inclusive, max_results),
+                  names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
+  }
+  return(ids)
 }
