@@ -1,26 +1,3 @@
-#' Validate input variables
-#'
-#' A helper function that validates the classes and lengths of inputs to
-#' uland_id and ulan_data functions.  Will stop() code if there are any invalid
-#' variable types
-validate_input <- function(names, early_year, late_year, inclusive, max_results) {
-  # Check names validity
-  stopifnot(is.character(names))
-  stopifnot(all(!is.na(names)))
-  stopifnot(all(!names == ""))
-
-  # early_year and late_year must be numeric
-  stopifnot(all(is.numeric(early_year), is.numeric(late_year)))
-
-  # Check if early_year and late_year are compatible
-  stopifnot(length(early_year) == length(late_year))
-
-  stopifnot(length(early_year) == 1 | length(early_year) == length(names))
-
-  # Check inclusive validity
-  stopifnot(is.logical(inclusive))
-}
-
 #' Match names to the Getty ULAN
 #'
 #' Queries the Getty ULAN to find matching entries for a given string. You
@@ -81,8 +58,21 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
 
   method <- match.arg(method)
 
-  # Check names, early_year, and late_year for valid class, length, and value
-  validate_input(names = names, early_year = early_year, late_year = late_year, inclusive = inclusive, max_results = max_results)
+  # Check names validity
+  stopifnot(is.character(names))
+  stopifnot(all(!is.na(names)))
+  stopifnot(all(!names == ""))
+
+  # early_year and late_year must be numeric
+  stopifnot(all(is.numeric(early_year), is.numeric(late_year)))
+
+  # Check if early_year and late_year are compatible
+  stopifnot(length(early_year) == length(late_year))
+
+  stopifnot(length(early_year) == 1 | length(early_year) == length(names))
+
+  # Check inclusive validity
+  stopifnot(is.logical(inclusive))
 
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
