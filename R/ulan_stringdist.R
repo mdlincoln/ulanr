@@ -58,18 +58,9 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
   score_table <- ulan_stringdist_lookup(name, early_year, late_year, inclusive, stringdist_ops)
 
   if(is.null(nrow(score_table)) | nrow(score_table) == 0 | score_table$score[1] < score_cutoff) {
-    warning("No matches found for the following name: ", name)
-    return(dplyr::data_frame(
-      id = NA,
-      pref_name = NA,
-      birth_year = NA,
-      death_year = NA,
-      gender = NA,
-      nationality = NA,
-      score = NA
-    ))
+    construct_results(results = NA, name = name)
   } else {
     score_table <- dplyr::slice(score_table, 1:max_results)
-    dplyr::select(score_table, id, pref_name, birth_year, death_year, gender, nationality, score)
+    construct_results(results = score_table)
   }
 }

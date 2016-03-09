@@ -41,26 +41,6 @@ sparql_url <- function(query) {
 #' @param max_results The maximum number of results to return
 ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results) {
 
-  # Helper function to construct a tidy dataframe from the list returned from
-  # the SPARQL query. The first column is the input name. If no results are
-  # returned, then the remaining columns will all be "NA"
-  construct_results <- function(sparql_results) {
-    if("data.frame" %in% class(sparql_results)) {
-      sparql_results$id <- as.integer(sparql_results$id)
-      dplyr::select(sparql_results, id, pref_name, birth_year, death_year, gender, nationality, score)
-    } else {
-      data.frame(
-        id = NA,
-        pref_name = NA,
-        birth_year = NA,
-        death_year = NA,
-        gender = NA,
-        nationality = NA,
-        score = NA
-      )
-    }
-  }
-
   # Return NA for missing or empty values of name
   if(any(is.null(name), is.na(name), name == ""))
     return(construct_results(NA))
@@ -97,11 +77,10 @@ ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, ma
     } LIMIT ", sparql_limit)
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
-  results <- readr::read_csv(sparql_url(query_string))
+  results <- readr::read_csv(sparql_url(query_string), col_types = "iciiccn")
 
-  if(nrow(results) == 0) {
-    warning("No matches found for the following name: ", name)
-    construct_results(NA)
+  if(nrow(results) < 1) {
+    construct_results(NA, name = name)
   } else {
     # Select the "value" fields from the returned list, and reformat them as a
     # tidy dataframe
