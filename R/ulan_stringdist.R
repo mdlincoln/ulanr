@@ -42,7 +42,6 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
   if(is.null(nrow(score_table)) | nrow(score_table) == 0) {
     warning("No matches found for the following name: ", name)
     return(dplyr::data_frame(
-      name = name,
       id = NA,
       pref_name = NA,
       birth_year = NA,
@@ -52,9 +51,8 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
       score = NA
     ))
   } else {
-    score_table$name <- name
     score_table <- dplyr::slice(score_table, 1:max_results)
-    dplyr::select(score_table, name, id, pref_name, birth_year, death_year, gender, nationality, score)
+    dplyr::select(score_table, id, pref_name, birth_year, death_year, gender, nationality, score)
   }
 }
 
@@ -65,11 +63,10 @@ ulan_stringdist_match <- function(names, early_year, late_year, inclusive, max_r
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
       ulan_stringdist_match_handler(a, b, c, inclusive, max_results)},
-      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
     close(pb)
-    dplyr::bind_rows(ids)
   } else {
-    ids <- mapply(function(a, b, c) ulan_stringdist_match_handler(a, b, c, inclusive, max_results), names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
-    dplyr::bind_rows(ids)
+    ids <- mapply(function(a, b, c) ulan_stringdist_match_handler(a, b, c, inclusive, max_results), names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
   }
+  return(ids)
 }

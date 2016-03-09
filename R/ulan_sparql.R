@@ -39,12 +39,10 @@ ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, ma
   # returned, then the remaining columns will all be "NA"
   construct_results <- function(sparql_results) {
     if("data.frame" %in% class(sparql_results)) {
-      sparql_results$name <- name
       sparql_results$id <- as.integer(sparql_results$id)
-      dplyr::select(sparql_results, name, id, pref_name, birth_year, death_year, gender, nationality, score)
+      dplyr::select(sparql_results, id, pref_name, birth_year, death_year, gender, nationality, score)
     } else {
       data.frame(
-        name = name,
         id = NA,
         pref_name = NA,
         birth_year = NA,
@@ -115,11 +113,11 @@ ulan_sparql_match <- function(names, early_year, late_year, inclusive, max_resul
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
       ulan_sparql_match_handler(a, b, c, inclusive, max_results)},
-      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+      names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
     close(pb)
   } else {
     ids <- mapply(function(a, b, c) ulan_sparql_match_handler(a, b, c, inclusive, max_results), names, early_year, late_year,
-      SIMPLIFY = FALSE, USE.NAMES = FALSE)
+      SIMPLIFY = FALSE, USE.NAMES = TRUE)
   }
   return(ids)
 }

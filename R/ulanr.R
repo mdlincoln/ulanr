@@ -55,10 +55,9 @@ validate_input <- function(names, early_year, late_year, inclusive, max_results)
 #'   Depending on the query, the actual number of results returned may be lower.
 #'   When \code{method = "sparql"} is used, values over 50 will be ignored.
 #'
-#' @return A list of data.frames, one per submitted name, with 7 columns and no
+#' @return A named list of data.frames, one per submitted name, with 7 columns and no
 #'   more than \code{max_results} rows:
 #' \describe{
-#' \item{\code{name}}{character. Original input vector}
 #' \item{\code{id}}{integer. ULAN id}
 #' \item{\code{pref_name}}{character. ULAN preferred name}
 #' \item{\code{birth_year}}{integer. Artist birth year, if assigned.}
