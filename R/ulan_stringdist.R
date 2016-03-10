@@ -25,7 +25,7 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
   match_tries <- dplyr::filter_(score_table, .dots = list(~alt_name == name))
 
   if(nrow(match_tries) > 0) {
-    match_tries$score <- 10
+    match_tries$score <- 0
     return(match_tries)
   }
 
