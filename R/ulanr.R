@@ -109,47 +109,17 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   return(ids)
 }
 
-#' Return a vector of matching ULAN IDs
-#'
-#' This function is a wrapper around \link{ulan_match} that simply returns a
+#' @describeIn ulan_match Return a vector of matching ULAN IDs. This function is a wrapper around \link{ulan_match} that simply returns a
 #' vector of the top match ID for each name given (as if \code{max_results} were
-#' 1).
-#'
-#' @note \code{max_results} will be ignored.
-#'
-#' @return An integer vector of ULAN IDs.
-#'
-#' @inheritParams ulan_match
+#' 1). \code{max_results} will be ignored.
 #' @export
 ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
   matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1)
   dplyr::bind_rows(matches)$id
 }
 
-#' Return a dataframe of matching ULAN IDs with attributes
-#'
-#' This function is a wrapper around \link{ulan_match} that simply returns a
-#' data.frame with the top match ID for each name given (as if \code{max_results} were
-#' 1)
-#'
-#' @return A data frame with 6 columns:
-#' \describe{
-#' \item{\code{id}}{integer. ULAN id}
-#' \item{\code{pref_name}}{character. ULAN preferred name}
-#' \item{\code{birth_year}}{integer. Artist birth year, if assigned.}
-#' \item{\code{death_year}}{integer. Artist death year, if assigned}
-#' \item{\code{gender}}{character. Artist gender, if assigned.}
-#' \item{\code{nationality}}{character. Artist nationality, if assigned.}
-#' \item{\code{score}}{numeric. The score of the result. When \code{method =
-#' "sparql"}, this is the Lucene index score (a higher score for a closer
-#' match). When \code{method = "local"}, it will instead be a scaled string
-#' distance score.}
-#' \item{\code{names}}{character. The input vector.}
-#' }
-#'
-#' @note \code{max_results} will be ignored.
-#'
-#' @inheritParams ulan_match
+
+#' @describeIn ulan_match Return a dataframe of matching ULAN IDs with attributes, with an additional column \code{names} containing the original input vector. This function is a wrapper around \link{ulan_match}.
 #' @export
 ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
   matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1)
