@@ -1,11 +1,7 @@
-#' Construct SPARQL date filter
-#'
-#' Constructs a portion of the SPARQL query to filter artists based on life
-#' dates
-#'
-#' @param inclusive Passed by ulan_sparql_match_handler.
-#' @param early_year Passed by ulan_sparql_match_handler.
-#' @param late_year Passed by ulan_sparql_match_handler.
+# Construct SPARQL date filter
+#
+# Constructs a portion of the SPARQL query to filter artists based on life
+# dates
 date_filter <- function(inclusive, early_year, late_year) {
   if(inclusive) {
     paste0("FILTER(?birth_year >= '", early_year, "'^^xsd:gYear && ?death_year <= '",
@@ -16,29 +12,20 @@ date_filter <- function(inclusive, early_year, late_year) {
   }
 }
 
-#' Format a SPARQL query as a URL
-#'
-#' Properly escapes the query to send to the Getty SPARQL endpoint
-#'
-#' @param query Passed by ulan_sparql_match_handler.
+# Format a SPARQL query as a URL
+#
+# Properly escapes the query to send to the Getty SPARQL endpoint
 sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
   escaped_query <- URLencode(query, reserved = TRUE)
   paste0(endpoint, ".csv?query=", escaped_query)
 }
 
-#' Search for a matching ULAN id and its associated databy using the Getty's
-#' live SPARQL endpoint and its Lucene index.
-#'
-#' This internal function implements the \code{method = "sparql"} option for
-#' \link{ulan_data}. See that funciton for documentation.
-#'
-#' @param name Passed from ulan_match.
-#' @param early_year Passed from ulan_match.
-#' @param late_year Passed from ulan_match.
-#' @param inclusive Passed from ulan_match.
-#' @param max_results Passed from ulan_match.
-#' @param ... ignores stringdist_ops argument, if present.
+# Search for a matching ULAN id and its associated databy using the Getty's
+# live SPARQL endpoint and its Lucene index.
+#
+# This internal function implements the \code{method = "sparql"} option for
+# \link{ulan_data}. See that funciton for documentation.
 ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results, ...) {
 
   # Return NA for missing or empty values of name

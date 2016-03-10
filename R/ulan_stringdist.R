@@ -1,13 +1,6 @@
-#' String Distance Lookup
-#'
-#' Run the table lookup using stringdist function, returning a data frame of all matches
-#'
-#' @param name Passed from ulan_match.
-#' @param early_year Passed from ulan_match.
-#' @param late_year Passed from ulan_match.
-#' @param inclusive Passed from ulan_match.
-#' @param max_results Passed from ulan_match.
-#' @param stringdist_ops Passed from ulan_match.
+# String Distance Lookup
+#
+# Run the table lookup using stringdist function, returning a data frame of all matches
 ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops) {
   # Strip punctuation from name string
   name <- trimws(tolower(gsub("[[:punct:]]", "", name)))
