@@ -30,12 +30,10 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
   }
 
   # Calculate string distance scores, rescaling scores 0-10
-  score_table$score <- stringdist::stringdist(name, score_table$alt_name)
-  score_table$score <- 10/(score_table$score + 0.1)
+  score_table$score <- stringdist::stringdist(name, score_table$alt_name, method = "cosine")
 
   # Sort by inverse score
-  score_table <- dplyr::distinct_(dplyr::arrange_(
-    score_table, lazyeval::interp(~dplyr::desc(col), col = as.name("score"))), "id")
+  score_table <- dplyr::distinct_(dplyr::arrange_(score_table, "score"), "id")
 
   return(score_table)
 }
@@ -55,14 +53,12 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive
   # Check that ulanrdata is installed
   check_ulanrdata_package()
 
-  score_cutoff <- 4
-
   score_table <- ulan_stringdist_lookup(name, early_year, late_year, inclusive, stringdist_ops)
 
-  if(is.null(nrow(score_table)) | nrow(score_table) == 0 | score_table$score[1] < score_cutoff) {
+  if(is.null(nrow(score_table)) | nrow(score_table) == 0) {
     construct_results(results = NA, name = name)
   } else {
-    score_table <- dplyr::slice_(score_table, .dots = list(1:max_results))
+    score_table <- score_table[1:min(c(nrow(score_table), max_results)),]
     construct_results(results = score_table)
   }
 }
