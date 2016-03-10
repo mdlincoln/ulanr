@@ -16,8 +16,10 @@ LazyData: TRUE
 Suggests:
   testthat,
   ulanrdata,
-  devtools
-LazyData: TRUE
+  devtools,
+  knitr,
+  rmarkdown
 URL: https://github.com/mdlincoln/ulanr
 BugReports: https://github.com/mdlincoln/ulanr/issues
 RoxygenNote: 5.0.1
+VignetteBuilder: knitr
