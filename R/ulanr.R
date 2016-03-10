@@ -74,6 +74,10 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   # Check inclusive validity
   stopifnot(is.logical(inclusive))
 
+  # Check that ulanrdata is installed
+  if(method == "local")
+    check_ulanrdata_package()
+
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
     warning("NAs in early_year have been coerced to -9999")

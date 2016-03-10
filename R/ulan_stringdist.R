@@ -52,9 +52,6 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
 #' @param stringdist_ops Passed from ulan_match.
 ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops = NULL) {
 
-  # Check that ulanrdata is installed
-  check_ulanrdata_package()
-
   score_cutoff <- 4
 
   score_table <- ulan_stringdist_lookup(name, early_year, late_year, inclusive, stringdist_ops)
