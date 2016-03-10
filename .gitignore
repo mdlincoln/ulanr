@@ -11,4 +11,5 @@
 vignettes/*.html
 vignettes/*.pdf
 vignettes/*.R
+vignettes/*_cache
 inst/doc
