@@ -2,10 +2,10 @@
 % Please edit documentation in R/ulan_stringdist.R
 \name{ulan_stringdist_match_handler}
 \alias{ulan_stringdist_match_handler}
-\title{Handle strindist results}
+\title{String Distance Lookup}
 \usage{
 ulan_stringdist_match_handler(name, early_year, late_year, inclusive,
-  max_results, stringdist_ops = NULL)
+  max_results, stringdist_ops)
 }
 \arguments{
 \item{name}{Passed from ulan_match.}
@@ -21,6 +21,6 @@ ulan_stringdist_match_handler(name, early_year, late_year, inclusive,
 \item{stringdist_ops}{Passed from ulan_match.}
 }
 \description{
-Returns one-row data frame with artist attributes
+Run the table lookup using stringdist function, returning a data frame of all matches
 }
 
