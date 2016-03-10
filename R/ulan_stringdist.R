@@ -2,13 +2,13 @@
 #'
 #' Run the table lookup using stringdist function, returning a data frame of all matches
 #'
-#' @param name Passed from ulan_stringdist_match_handler.
-#' @param early_year Passed from ulan_stringdist_match_handler.
-#' @param late_year Passed from ulan_stringdist_match_handler.
-#' @param inclusive Passed from ulan_stringdist_match_handler.
-#' @param stringdist_ops Passed from ulan_stringdist_match_handler, to be used
-#'   in stringdist() call.
-ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, stringdist_ops) {
+#' @param name Passed from ulan_match.
+#' @param early_year Passed from ulan_match.
+#' @param late_year Passed from ulan_match.
+#' @param inclusive Passed from ulan_match.
+#' @param max_results Passed from ulan_match.
+#' @param stringdist_ops Passed from ulan_match.
+ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops) {
   # Strip punctuation from name string
   name <- trimws(tolower(gsub("[[:punct:]]", "", name)))
 
@@ -26,7 +26,7 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
 
   if(nrow(match_tries) > 0) {
     match_tries$score <- 0
-    return(match_tries)
+    return(construct_results(match_tries))
   }
 
   # Calculate string distance scores, rescaling scores 0-10
@@ -34,23 +34,6 @@ ulan_stringdist_lookup <- function(name, early_year, late_year, inclusive, strin
 
   # Sort by inverse score
   score_table <- dplyr::distinct_(dplyr::arrange_(score_table, "score"), "id")
-
-  return(score_table)
-}
-
-#' Handle strindist results
-#'
-#' Returns one-row data frame with artist attributes
-#'
-#' @param name Passed from ulan_match.
-#' @param early_year Passed from ulan_match.
-#' @param late_year Passed from ulan_match.
-#' @param inclusive Passed from ulan_match.
-#' @param max_results Passed from ulan_match.
-#' @param stringdist_ops Passed from ulan_match.
-ulan_stringdist_match_handler <- function(name, early_year, late_year, inclusive, max_results, stringdist_ops = NULL) {
-
-  score_table <- ulan_stringdist_lookup(name, early_year, late_year, inclusive, stringdist_ops)
 
   if(is.null(nrow(score_table)) | nrow(score_table) == 0) {
     construct_results(results = NA, name = name)
