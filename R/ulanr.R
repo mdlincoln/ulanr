@@ -111,6 +111,8 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
 #' vector of the top match ID for each name given (as if \code{max_results} were
 #' 1).
 #'
+#' @note \code{max_results} will be ignored.
+#'
 #' @inheritParams ulan_match
 #' @export
 ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
