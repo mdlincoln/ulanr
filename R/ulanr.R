@@ -28,8 +28,8 @@
 #'   Depending on the query, the actual number of results returned may be lower.
 #'   When \code{method = "sparql"} is used, values over 50 will be ignored.
 #'
-#' @return A named list of data.frames, one per submitted name, with 7 columns and no
-#'   more than \code{max_results} rows:
+#' @return A named list of data.frames, one per submitted name, with 7 columns
+#'   and no more than \code{max_results} rows:
 #' \describe{
 #' \item{\code{id}}{integer. ULAN id}
 #' \item{\code{pref_name}}{character. ULAN preferred name}
