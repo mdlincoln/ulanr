@@ -12,13 +12,13 @@ Imports:
   readr,
   stringdist,
   lazyeval
-LazyData: LazyData: TRUE
+LazyData: TRUE
 Suggests:
   testthat,
   ulanrdata,
   devtools,
-    knitr,
-    rmarkdown
+  knitr,
+  rmarkdown
 URL: https://github.com/mdlincoln/ulanr
 BugReports: https://github.com/mdlincoln/ulanr/issues
 RoxygenNote: 5.0.1
