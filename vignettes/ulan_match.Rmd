@@ -1,0 +1,78 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Matching personal names is a perennial difficulty in the study of art history, as researchers must deal not only with variant spellings in collections around the world (looking for "Rembrandt van Rijn"? Don't forget to check for mentions of "رامبرانت"!) but also historical spellings (like "Rembrandt Hermanszoon van Rijn").
+The Getty's Union List of Artist Names was expressly designed to catalog both modern-day spellings as well as historical variants and occurences, providing museums an authority list sa they describe their own collections.
+However, unless the ULAN has the exact spelling of an artist's name in their directory, finding candidate matches still invovles a lot of manual work.
+
+This package aims to automate the identification of matching candidates in the ULAN from a list of names.
+
+## Local and Remote Methods
+
+`ulan_match` takes a character vector of names, and returns a named list of candidate matches.
+
+`method = "local"` will search for results from a table of the ULAN's alternate names (available through the [ulanrdata]() package), returning a named list with one data.frame per input name, each listing ULAN entites with alternate names that have a high character-level [cosine similarity](http://nlp.stanford.edu/IR-book/html/htmledition/dot-products-1.html) to the input names.
+When the input name matches one of the ULAN alternate names exactly, the `local` method will return only those matches, without running costly string similarity measurements. (Note that it is possible for two separate individuals, e.g. Vincent van Gogh (1820-1888) and Vincent van Gogh (1853-1890) to match the same variant name spelling.)
+
+```{r}
+library(ulanr)
+ulan_match(c("Rembrandt van Rijn", "Vincent van Gogh"), method = "local")
+```
+
+An alternate method, `method = "sparql"`, works by directly querying the Getty's live [SPARQL endpoint](vocab.getty.edu/sparql), relying on their Lucene index to search for similar matches across the alternate and preferred names for all artists.
+
+```{r}
+ulan_match(c("Rembrandt", "Vincent van Gogh"), method = "sparql")
+```
+
+## Date restrictions
+
+You may have more than just a name when searching for an artist - you may also know when they were alive.
+Use the `early_year` and `late_year` arguments to establish bounds for match candidates.
+When `strictly_between == FALSE` (the default), matches will be allowed when the input lifespan _intersects_ with the lifespan defined by the ULAN.
+When `strictly_between == TRUE`, then ULAN matches' life dates must fall completely witihn the `early_year:late_year` range.
+
+```{r date_restrictions}
+ulan_match("Rembrandt", early_year = 1600, late_year = 1800, strictly_between = FALSE, method = "sparql")
+
+ulan_match("Rembrandt", early_year = 1600, late_year = 1800, strictly_between = TRUE, method = "sparql")
+```
+
+You may supply vectors to `early_year` and `late_year` of the same length as `names`, or you can alternately provide them with a single value that will be recycled for all queries.
+
+## `cutoff_score` and `max_results`
+
+The data.frame returned by `ulan_match` contains a `score` column with the similarity score returned by either the cosine similarity metric used for the `local` method, or the Lucene index used by the `sparql` method.
+**These scores are not directly comparable.**
+The cosine similarity score may range between 0 to 1, while the Lucene result score, in this particular query environment, tends to range between between 0 and 12 or more.[^lucencomp]
+If `cutoff_score` is set to `NULL`, then sane defaults are used based on the given method (0.95 for `local` and 3 for `sparql`.)
+Set `cutoff_score` to 0 to return results of any score.
+
+You may also set the maximum number of results to be returned via max_results.
+This defaults to 5, though for `method = "sparql"` any number higher than 50 will be ignored, out of politeness towards the Getty's endpoint.
+
+[^lucenecomp]: Be warned that it can be treacherous to compare Lucene search results between different queries: <http://wiki.apache.org/lucene-java/ScoresAsPercentages>. In this case, however, because the "documents" and queries are largely consistent, it is possible to declare a useful cutoff score.
+
+```{r score_cutoff}
+ulan_match("Vincent van Gogh", cutoff_score = 0, max_results = 10, method = "local")
+```
+
+## `ulan_id` and `ulan_data`
+
+These are utility wrapper functions that return only the top match of `ulan_match`.
+`ulan_id` returns a vector of ID numbers, while `ulan_data` returns a single data frame with all the columns from the regular results of `ulan_match`, along with a `name` column matching the original vector of names supplied by the user.
+
+```{r wrapper_functions}
+ulan_id(c("Rembrandt van Rijn", "Vincent van Gogh"), method = "sparql")
+
+ulan_data(c("Rembrandt van Rijn", "Vincent van Gogh"), method = "sparql")
+```
+
