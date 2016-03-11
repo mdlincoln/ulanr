@@ -22,11 +22,17 @@
 #' @param method This value determines which method will be used to match the
 #'   name to a canonical ULAN id. \code{sparql} will query the Getty's live
 #'   endpoint, relying on its Lucene index for finding close matches, while
-#'   \code{local} instead uses string distance measures based on a local table
+#'   \code{local} instead uses string cosine similarity based on a local table
 #'   of ULAN entries.
 #' @param max_results The maximum number of results to return. Defaults to 5.
 #'   Depending on the query, the actual number of results returned may be lower.
 #'   When \code{method = "sparql"} is used, values over 50 will be ignored.
+#' @param cutoff_score The minimum similarity score that must be returned by the
+#'   chosen method for a candidate to be included in results. \code{NULL} will
+#'   use default values for each method: 0.95 for the \code{local} method, and 3
+#'   for the \code{sparql} method.
+#'
+#' @note \code{cutoff_score} will be ingored for
 #'
 #' @return A named list of data.frames, one per submitted name, with 7 columns
 #'   and no more than \code{max_results} rows:
@@ -38,9 +44,9 @@
 #' \item{\code{gender}}{character. Artist gender, if assigned.}
 #' \item{\code{nationality}}{character. Artist nationality, if assigned.}
 #' \item{\code{score}}{numeric. The score of the result. When \code{method =
-#' "sparql"}, this is the Lucene index score (a higher score for a closer
-#' match). When \code{method = "local"}, it will instead be a scaled string
-#' distance score.}
+#' "sparql"}, this is the Lucene index score. When \code{method = "local"}, it
+#' will instead be a cosine similarity score. Results with a score below
+#' \code{cutoff_score} are dropped.}
 #' }
 #'
 #' Unmatched names will return a data.frame with NAs for all values save
@@ -54,7 +60,7 @@
 #'                  late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
 #'                  late_year = c(1700, 2000), method = "sparql")}
-ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 5) {
+ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 5, cutoff_score = NULL) {
 
   method <- match.arg(method)
 
@@ -78,6 +84,14 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
   if(method == "local")
     check_ulanrdata_package()
 
+  # Set cutoff_score if not specified
+
+  if(is.null(cutoff_score)) {
+    cutoff_score <- switch(method,
+                           "local" = 0.95,
+                           "sparql" = 3)
+  }
+
   # Replace any NA values in early_year and late_year with default time range
   if(any(is.na(early_year))) {
     warning("NAs in early_year have been coerced to -9999")
@@ -99,11 +113,11 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_dispatcher(a, b, c, inclusive, max_results)},
+      ulan_dispatcher(a, b, c, inclusive, max_results, cutoff_score)},
       names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
     close(pb)
   } else {
-    ids <- mapply(function(a, b, c) ulan_dispatcher(a, b, c, inclusive, max_results),
+    ids <- mapply(function(a, b, c) ulan_dispatcher(a, b, c, inclusive, max_results, cutoff_score),
                   names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
   }
   return(ids)
@@ -114,7 +128,7 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
 #' 1). \code{max_results} will be ignored.
 #' @export
 ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
-  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1)
+  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1, cutoff_score = NULL)
   dplyr::bind_rows(matches)$id
 }
 
@@ -122,6 +136,6 @@ ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRU
 #' @describeIn ulan_match Return a dataframe of matching ULAN IDs with attributes, with an additional column \code{names} containing the original input vector. This function is a wrapper around \link{ulan_match}.
 #' @export
 ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
-  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1)
+  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1, cutoff_score = NULL)
   dplyr::bind_rows(matches, .id = "names")
 }

@@ -26,7 +26,7 @@ sparql_url <- function(query) {
 #
 # This internal function implements the \code{method = "sparql"} option for
 # \link{ulan_data}. See that funciton for documentation.
-ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results, ...) {
+ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results, score_cutoff) {
 
   # Return NA for missing or empty values of name
   if(any(is.null(name), is.na(name), name == ""))
@@ -61,6 +61,8 @@ ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, ma
       OPTIONAL {
         ?focus gvp:nationalityPreferred [gvp:prefLabelGVP [gvp:term ?nationality]] .
       }
+
+      FILTER(xsd:double(?score) > ", score_cutoff, ")
     } LIMIT ", sparql_limit)
 
   # Fire the query to the Getty SPARQL endpoint and parse the results
