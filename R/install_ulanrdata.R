@@ -1,8 +1,12 @@
-# Check whether to install data for local ULAN matching, and install if
-# necessary
-#
-# If the ulanrdata package is not installed, install it from GitHub using
-# devtools. If it is not up to date, reinstall it.
+# This code has been shamelessly adapted from Lincoln Mullen's "gender" package:
+# https://github.com/ropensci/gender/blob/master/R/install-genderdata-package.R
+
+#' Check whether to install data for local ULAN matching, and install if
+#' necessary
+#'
+#' If the ulanrdata package is not installed, install it from GitHub using
+#' devtools. If it is not up to date, reinstall it.
+#' @export
 check_ulanrdata_package <- function() {
   ulanrdata_version <- "0.1"
   if (!requireNamespace("ulanrdata", quietly = TRUE)) {
@@ -14,7 +18,8 @@ check_ulanrdata_package <- function() {
   }
 }
 
-# Install the ulanrdata package after checking with the user
+#' Install the ulanrdata package after checking with the user
+#' @export
 install_ulanrdata_package <- function() {
   input <- menu(c("Yes", "No"), title = "Install the ulanrdata package?")
   if (input == 1) {
