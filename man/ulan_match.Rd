@@ -6,14 +6,17 @@
 \alias{ulan_match}
 \title{Match names to the Getty ULAN}
 \usage{
-ulan_match(names, early_year = -9999, late_year = 2090, inclusive = TRUE,
-  method = c("sparql", "local"), max_results = 5)
+ulan_match(names, early_year = -9999, late_year = 2090,
+  strictly_between = FALSE, method = c("sparql", "local"),
+  max_results = 5, cutoff_score = NULL)
 
-ulan_id(names, early_year = -9999, late_year = 2090, inclusive = TRUE,
-  method = c("sparql", "local"), max_results = 1)
+ulan_id(names, early_year = -9999, late_year = 2090,
+  strictly_between = FALSE, method = c("sparql", "local"),
+  max_results = 1)
 
-ulan_data(names, early_year = -9999, late_year = 2090, inclusive = TRUE,
-  method = c("sparql", "local"), max_results = 1)
+ulan_data(names, early_year = -9999, late_year = 2090,
+  strictly_between = FALSE, method = c("sparql", "local"),
+  max_results = 1)
 }
 \arguments{
 \item{names}{A character vector of names to match to a canonical ULAN id.}
@@ -30,21 +33,26 @@ minima.}
 
 \item{late_year}{Match only artists who were born before this year.}
 
-\item{inclusive}{Method for filtering search results using the
-early_year/late_year parameters. TRUE (the default) will only include
-artists whose life dates fall within the range [late_year, early_year].
-FALSE will include artists whose life dates intersect with [early_year,
+\item{strictly_between}{Method for filtering search results using the
+early_year/late_year parameters. TRUE will only include artists whose life
+dates fall within the range [late_year, early_year]. FALSE (the default)
+will include artists whose life dates intersect with [early_year,
 late_year]}
 
 \item{method}{This value determines which method will be used to match the
 name to a canonical ULAN id. \code{sparql} will query the Getty's live
 endpoint, relying on its Lucene index for finding close matches, while
-\code{local} instead uses string distance measures based on a local table
+\code{local} instead uses string cosine similarity based on a local table
 of ULAN entries.}
 
 \item{max_results}{The maximum number of results to return. Defaults to 5.
 Depending on the query, the actual number of results returned may be lower.
 When \code{method = "sparql"} is used, values over 50 will be ignored.}
+
+\item{cutoff_score}{The minimum similarity score that must be returned by the
+chosen method for a candidate to be included in results. \code{NULL} will
+use default values for each method: 0.95 for the \code{local} method, and 3
+for the \code{sparql} method.}
 }
 \value{
 A named list of data.frames, one per submitted name, with 7 columns
@@ -57,9 +65,9 @@ A named list of data.frames, one per submitted name, with 7 columns
 \item{\code{gender}}{character. Artist gender, if assigned.}
 \item{\code{nationality}}{character. Artist nationality, if assigned.}
 \item{\code{score}}{numeric. The score of the result. When \code{method =
-"sparql"}, this is the Lucene index score (a higher score for a closer
-match). When \code{method = "local"}, it will instead be a scaled string
-distance score.}
+"sparql"}, this is the Lucene index score. When \code{method = "local"}, it
+will instead be a cosine similarity score. Results with a score below
+\code{cutoff_score} are dropped.}
 }
 
 Unmatched names will return a data.frame with NAs for all values save
@@ -78,6 +86,8 @@ vector of the top match ID for each name given (as if \code{max_results} were
 \item \code{ulan_data}: Return a dataframe of matching ULAN IDs with attributes, with an additional column \code{names} containing the original input vector. This function is a wrapper around \link{ulan_match}.
 }}
 \note{
+\code{cutoff_score} will be ingored for
+
 \code{method = "sparql"} requires an internet connection.
 }
 \examples{
