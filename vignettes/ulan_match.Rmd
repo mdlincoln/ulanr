@@ -10,8 +10,8 @@ vignette: >
 ---
 
 Matching personal names is a perennial difficulty in the study of art history, as researchers must deal not only with variant spellings in collections around the world (looking for "Rembrandt van Rijn"? Don't forget to check for mentions of "رامبرانت"!) but also variant spellings that have appeared in historical documents (e.g. "Rembrandt Hermanszoon van Rijn").
-The Getty's [Union List of Artist Names](http://www.getty.edu/research/tools/vocabularies/ulan/) was expressly designed to catalog both modern-day spellings as well as historical variants and occurences, providing museums an authority list to aid in describing their own collections.
-However, unless the ULAN has the exact spelling of an artist's name in their directory, finding candidate matches still invovles a lot of manual work.
+The Getty's [Union List of Artist Names](http://www.getty.edu/research/tools/vocabularies/ulan/) was expressly designed to catalog both modern-day spellings as well as historical variants and occurrences, providing museums an authority list to aid in describing their own collections.
+However, unless the ULAN has the exact spelling of an artist's name in their directory, finding candidate matches still involves a lot of manual work.
 
 This package aims to partially automate the identification of matching candidates in the ULAN by fuzzy matching.
 
@@ -19,7 +19,7 @@ This package aims to partially automate the identification of matching candidate
 
 `ulan_match` takes a character vector of names, and returns a named list of data frames with the attributes of candidate matches.
 
-`method = "local"` will search for results from a table of the ULAN's alternate names (available through the [ulanrdata]() package), returning a named list with one data.frame per input name, each listing ULAN entites with alternate names that have a high character-level [cosine similarity](http://nlp.stanford.edu/IR-book/html/htmledition/dot-products-1.html) to the input names.
+`method = "local"` will search for results from a table of the ULAN's alternate names (available through the [ulanrdata](https://github.com/mdlincoln/ulanrdata) package), returning a named list with one data.frame per input name, each listing ULAN entities with alternate names that have a high character-level [cosine similarity](http://nlp.stanford.edu/IR-book/html/htmledition/dot-products-1.html) to the input names.
 When the input name matches one of the ULAN alternate names exactly, the `local` method will return only those matches, without running costly string similarity measurements. (Note that it is possible for two separate individuals, e.g. Vincent van Gogh (1820-1888) and Vincent van Gogh (1853-1890) to match the same variant name spelling.)
 
 ```{r}
@@ -37,7 +37,7 @@ This format plays nicely with `dplyr::bind_rows()`, whose `.id` argument will al
 
 ```{r}
 suppressPackageStartupMessages(library(dplyr))
-ulan_match(c("Rembrandt", "Vincent van Gogh"), method = "sparql") %>% 
+ulan_match(c("Rembrandt", "Vincent van Gogh"), method = "sparql") %>%
   bind_rows(.id = "original_name")
 ```
 
@@ -46,7 +46,7 @@ ulan_match(c("Rembrandt", "Vincent van Gogh"), method = "sparql") %>%
 You may have more than just a name when searching for an artist - you may also know when they were alive.
 Use the `early_year` and `late_year` arguments to establish bounds for match candidates.
 When `strictly_between = FALSE` (the default), matches will be allowed when the input lifespan _intersects_ with the lifespan defined by the ULAN.
-When `strictly_between = TRUE`, then ULAN matches' life dates must fall completely witihn the `early_year:late_year` range.
+When `strictly_between = TRUE`, then ULAN matches' life dates must fall completely within the `early_year:late_year` range.
 
 ```{r date_restrictions}
 ulan_match("Rembrandt", early_year = 1600, late_year = 1800, strictly_between = FALSE, method = "sparql")
@@ -59,7 +59,7 @@ You may supply vectors to `early_year` and `late_year` of the same length as `na
 ## `cutoff_score` and `max_results`
 
 The data.frame returned for each name given to `ulan_match` contains a `score` column with the similarity score returned by either the cosine similarity metric used for the `local` method, or the Lucene index used by the `sparql` method.
-**These scores are not directly comparable accross methods.**
+**These scores are not directly comparable across methods.**
 The cosine similarity score may range between 0 to 1, while the Lucene result score, in this particular query environment, tends to range between between 0 and 12 or more.
 ([Exercise care when interpreting the Lucene result scores!](http://wiki.apache.org/lucene-java/ScoresAsPercentages))
 
