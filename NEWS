@@ -1,0 +1,7 @@
+## ulanr 0.3.0
+
+- New core function `ulan_match` returns a named list of candidate matches.
+  - New `local` method uses string similarity measures to fuzzily match artist names from a local table derived from the ULAN data. See `vignette("ulan_match")` for more detail.
+  - `ulan_id` and `ulan_data` are still available as wrapper functions around `ulan_match`.
+  - The `score_cutoff` argument may be used to exclude matches that fall below a certain similarity score, dependent on the matching method being used.
+- Added a package vignette.
