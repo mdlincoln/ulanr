@@ -2,8 +2,8 @@
 #
 # Constructs a portion of the SPARQL query to filter artists based on life
 # dates
-date_filter <- function(inclusive, early_year, late_year) {
-  if(inclusive) {
+date_filter <- function(strictly_between, early_year, late_year) {
+  if(strictly_between) {
     paste0("FILTER(?birth_year >= '", early_year, "'^^xsd:gYear && ?death_year <= '",
            late_year, "'^^xsd:gYear)")
   } else {
@@ -26,7 +26,7 @@ sparql_url <- function(query) {
 #
 # This internal function implements the \code{method = "sparql"} option for
 # \link{ulan_data}. See that funciton for documentation.
-ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, max_results, score_cutoff) {
+ulan_sparql_match_handler <- function(name, early_year, late_year, strictly_between, max_results, score_cutoff) {
 
   # Return NA for missing or empty values of name
   if(any(is.null(name), is.na(name), name == ""))
@@ -53,7 +53,7 @@ ulan_sparql_match_handler <- function(name, early_year, late_year, inclusive, ma
       ?focus gvp:biographyPreferred ?bio .
       ?bio gvp:estStart ?birth_year ;
         gvp:estEnd ?death_year . ",
-      date_filter(inclusive, early_year, late_year),
+      date_filter(strictly_between, early_year, late_year),
       "OPTIONAL {
         ?bio schema:gender [gvp:prefLabelGVP [gvp:term ?gender]] .
       }

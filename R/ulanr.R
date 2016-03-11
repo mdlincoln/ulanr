@@ -14,10 +14,10 @@
 #'   \code{early_year} or \code{late_year} will be coerced to default maxima and
 #'   minima.
 #' @param late_year Match only artists who were born before this year.
-#' @param inclusive Method for filtering search results using the
-#'   early_year/late_year parameters. TRUE (the default) will only include
-#'   artists whose life dates fall within the range [late_year, early_year].
-#'   FALSE will include artists whose life dates intersect with [early_year,
+#' @param strictly_between Method for filtering search results using the
+#'   early_year/late_year parameters. TRUE will only include artists whose life
+#'   dates fall within the range [late_year, early_year]. FALSE (the default)
+#'   will include artists whose life dates intersect with [early_year,
 #'   late_year]
 #' @param method This value determines which method will be used to match the
 #'   name to a canonical ULAN id. \code{sparql} will query the Getty's live
@@ -60,7 +60,7 @@
 #'                  late_year = 1700, method = "sparql")}
 #' \dontrun{ulan_id(c("Rembrandt", "Rothko"), early_year = c(1600, 1900),
 #'                  late_year = c(1700, 2000), method = "sparql")}
-ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 5, cutoff_score = NULL) {
+ulan_match <- function(names, early_year = -9999, late_year = 2090, strictly_between = FALSE, method = c("sparql", "local"), max_results = 5, cutoff_score = NULL) {
 
   method <- match.arg(method)
 
@@ -77,8 +77,8 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
 
   stopifnot(length(early_year) == 1 | length(early_year) == length(names))
 
-  # Check inclusive validity
-  stopifnot(is.logical(inclusive))
+  # Check strictly_between validity
+  stopifnot(is.logical(strictly_between))
 
   # Check that ulanrdata is installed
   if(method == "local")
@@ -113,11 +113,11 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
     pb <- txtProgressBar(min = 0, max = length(names), style = 3)
     ids <- mapply(function(a, b, c) {
       setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
-      ulan_dispatcher(a, b, c, inclusive, max_results, cutoff_score)},
+      ulan_dispatcher(a, b, c, strictly_between, max_results, cutoff_score)},
       names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
     close(pb)
   } else {
-    ids <- mapply(function(a, b, c) ulan_dispatcher(a, b, c, inclusive, max_results, cutoff_score),
+    ids <- mapply(function(a, b, c) ulan_dispatcher(a, b, c, strictly_between, max_results, cutoff_score),
                   names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
   }
   return(ids)
@@ -127,15 +127,15 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, inclusive = 
 #' vector of the top match ID for each name given (as if \code{max_results} were
 #' 1). \code{max_results} will be ignored.
 #' @export
-ulan_id <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
-  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1, cutoff_score = NULL)
+ulan_id <- function(names, early_year = -9999, late_year = 2090, strictly_between = FALSE, method = c("sparql", "local"), max_results = 1) {
+  matches <- ulan_match(names, early_year, late_year, strictly_between, method, max_results = 1, cutoff_score = NULL)
   dplyr::bind_rows(matches)$id
 }
 
 
 #' @describeIn ulan_match Return a dataframe of matching ULAN IDs with attributes, with an additional column \code{names} containing the original input vector. This function is a wrapper around \link{ulan_match}.
 #' @export
-ulan_data <- function(names, early_year = -9999, late_year = 2090, inclusive = TRUE, method = c("sparql", "local"), max_results = 1) {
-  matches <- ulan_match(names, early_year, late_year, inclusive, method, max_results = 1, cutoff_score = NULL)
+ulan_data <- function(names, early_year = -9999, late_year = 2090, strictly_between = FALSE, method = c("sparql", "local"), max_results = 1) {
+  matches <- ulan_match(names, early_year, late_year, strictly_between, method, max_results = 1, cutoff_score = NULL)
   dplyr::bind_rows(matches, .id = "names")
 }
