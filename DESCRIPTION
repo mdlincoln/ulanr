@@ -2,7 +2,7 @@ Package: ulanr
 Type: Package
 Title: Reconcile Names to the Getty Union List of Artist Names
 Version: 0.3.0.9000
-Authors@R: person("Matthew", "Lincoln", email = "mlincol1@umd.edu",
+Authors@R: person("Matthew", "Lincoln", email = "matthew.d.lincoln@gmail.com",
   role = c("aut", "cre"))
 Description: Matches variant spellings of artist names to canonical ids by
     calling the Getty Union List of Artist Names SPARQL endpoint.
