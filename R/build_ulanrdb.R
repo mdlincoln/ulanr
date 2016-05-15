@@ -26,10 +26,6 @@ build_ulanrdb <- function() {
   }
 }
 
-db_exists <- function(tbl_path) {
-  file.exists()
-}
-
 build_tables <- function(tbl_path) {
   message("Downloading alternate names table (~18MB)")
   id_response <- httr::GET(construct_sparql_url(id_altname_query()), httr::progress())
