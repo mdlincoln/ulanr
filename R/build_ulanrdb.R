@@ -10,7 +10,7 @@ build_ulanrdb <- function() {
   # First check that ulanrdb is installed
   check_ulanrdb_package()
 
-  if(file.exists(ulanrdb_path())) {
+  if(ulanrdb_exists()) {
     input <- menu(c("Yes", "No"), title = paste0("Local database already exists. Overwrite?"))
     if(input == 2) {
       message("Not overwriting ", ulanrdb_path())
@@ -24,6 +24,10 @@ build_ulanrdb <- function() {
   } else {
     stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
   }
+}
+
+ulanrdb_exists <- function() {
+  file.exists(ulanrdb_path())
 }
 
 build_tables <- function(tbl_path) {
