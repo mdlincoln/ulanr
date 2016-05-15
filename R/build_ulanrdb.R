@@ -129,3 +129,12 @@ install_ulanrdb_package <- function() {
     stop("The ulanrdb package is necessary for your chosen method.")
   }
 }
+
+#' Clear the local ULAN database
+#'
+#' A convenience function to remove the on-disk ULAN database
+#'
+#' @export
+delete_ulanrdb <- function() {
+  unlink(ulanrdb_path())
+}
