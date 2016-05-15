@@ -45,7 +45,7 @@ build_tables <- function(tbl_path) {
                   alt_name = tolower(gsub("[[:punct:]]", "", alt_name))))
 
   message("Saving final table to ", tbl_path)
-  saveRDS(query_table, file = tbl_path, overwrite = TRUE)
+  save(query_table, file = tbl_path)
 }
 
 # Retrieve Table combining all IDs with both pref and alt names unified in one
@@ -100,7 +100,7 @@ construct_sparql_url <- function(query) {
 }
 
 ulanrdb_path <- function() {
-  paste0(system.file("db", package = "ulanrdb", mustWork = TRUE), "/ulan_table.rds")
+  paste0(system.file("db", package = "ulanrdb"), "/ulan_table.rda")
 }
 
 check_ulanrdb_package <- function() {
