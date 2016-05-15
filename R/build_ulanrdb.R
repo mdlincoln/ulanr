@@ -22,7 +22,7 @@ build_ulanrdb <- function() {
   if(input == 1) {
     build_tables(ulanrdb_path())
   } else {
-    stop("A local ULAN database must be built in order to proceed.")
+    stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
   }
 }
 
