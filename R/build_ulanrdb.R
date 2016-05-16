@@ -18,16 +18,28 @@ build_ulanrdb <- function() {
     }
   }
 
+  delete_ulanrdb()
+
   input <- menu(c("Yes", "No"), title = paste0("Downloading tables to ", ulanrdb_path(), ". The total download size is usually ~26.5MB. Proceed?"))
   if(input == 1) {
     build_tables(ulanrdb_path())
   } else {
     stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
   }
+
+  devtools::reload(devtools::inst("ulanr"))
 }
 
 ulanrdb_exists <- function() {
   file.exists(ulanrdb_path())
+}
+
+ulanrdb_is_loaded <- function() {
+  exists("query_table")
+}
+
+load_ulanrdb <- function() {
+  load(ulanrdb_path(), envir = as.environment("package:ulanr"))
 }
 
 build_tables <- function(tbl_path) {
