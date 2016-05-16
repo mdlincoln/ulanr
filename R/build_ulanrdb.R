@@ -11,25 +11,28 @@ build_ulanrdb <- function() {
   # First check that ulanrdb is installed
   check_ulanrdb_package()
 
-  # Now check if a DB already exists. If so, offer to rewrite.
-  if(ulanrdb_exists()) {
-    input <- menu(c("Yes", "No"), title = paste0("Local database already exists. Overwrite?"))
-    if(input == 2) {
-      message("Not overwriting ", ulanrdb_path())
-      return(invisible())
-    } else {
-      # If proceeding, clear out any existing db
-      delete_ulanrdb()
+  if(interactive()) {
+    # Now check if a DB already exists. If so, offer to rewrite.
+    if(ulanrdb_exists()) {
+      input <- menu(c("Yes", "No"), title = paste0("Local database already exists. Overwrite?"))
+      if(input == 2) {
+        message("Not overwriting ", ulanrdb_path())
+        return(invisible())
+      }
     }
   }
 
-  # Confirm before starting download, offering approximate size
-  input <- menu(c("Yes", "No"), title = paste0("Downloading tables to ", ulanrdb_path(), ". The total download size is usually ~26.5MB. Proceed?"))
-  if(input == 1) {
-    build_tables(ulanrdb_path())
-  } else {
-    stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
+  # If proceeding, clear out any existing db
+  delete_ulanrdb()
+
+  if(interactive()) {
+    # Confirm before starting download, offering approximate size
+    input <- menu(c("Yes", "No"), title = paste0("Downloading tables to ", ulanrdb_path(), ". The total download size is usually ~26.5MB. Proceed?"))
+    if(input != 1)
+      stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
   }
+
+  build_tables(ulanrdb_path())
 
   # Once local table has been built and saved, reload the entire package in
   # order to trigger .onAttach
