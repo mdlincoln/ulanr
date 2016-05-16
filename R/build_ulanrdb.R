@@ -30,6 +30,11 @@ build_ulanrdb <- function() {
   devtools::reload(devtools::inst("ulanr"))
 }
 
+# The path of the .rda table within the ulanrdb package
+ulanrdb_path <- function() {
+  paste0(system.file("db", package = "ulanrdb"), "/ulan_table.rda")
+}
+
 ulanrdb_exists <- function() {
   file.exists(ulanrdb_path())
 }
@@ -109,10 +114,6 @@ construct_sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
   escaped_query <- URLencode(query, reserved = TRUE)
   paste0(endpoint, ".csv?query=", escaped_query)
-}
-
-ulanrdb_path <- function() {
-  paste0(system.file("db", package = "ulanrdb"), "/ulan_table.rda")
 }
 
 check_ulanrdb_package <- function() {
