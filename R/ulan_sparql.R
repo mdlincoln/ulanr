@@ -17,7 +17,7 @@ date_filter <- function(strictly_between, early_year, late_year) {
 # Properly escapes the query to send to the Getty SPARQL endpoint
 sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
-  escaped_query <- URLencode(query, reserved = TRUE)
+  escaped_query <- utils::URLencode(query, reserved = TRUE)
   paste0(endpoint, ".csv?query=", escaped_query)
 }
 

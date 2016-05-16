@@ -14,7 +14,7 @@ build_ulanrdb <- function() {
   if(interactive()) {
     # Now check if a DB already exists. If so, offer to rewrite.
     if(ulanrdb_exists()) {
-      input <- menu(c("Yes", "No"), title = paste0("Local database already exists. Overwrite?"))
+      input <- utils::menu(c("Yes", "No"), title = paste0("Local database already exists. Overwrite?"))
       if(input == 2) {
         message("Not overwriting ", ulanrdb_path())
         return(invisible())
@@ -27,7 +27,7 @@ build_ulanrdb <- function() {
 
   if(interactive()) {
     # Confirm before starting download, offering approximate size
-    input <- menu(c("Yes", "No"), title = paste0("Downloading tables to ", ulanrdb_path(), ". The total download size is usually ~26.5MB. Proceed?"))
+    input <- utils::menu(c("Yes", "No"), title = paste0("Downloading tables to ", ulanrdb_path(), ". The total download size is usually ~26.5MB. Proceed?"))
     if(input != 1)
       stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
   }
@@ -71,9 +71,9 @@ build_tables <- function(tbl_path) {
   message("Parsing downloads...")
   id_tbl <- readr::read_csv(httr::content(id_response, as = "text"), col_types = "ic")
   attr_tbl <- readr::read_csv(httr::content(attr_response, as = "text"), col_types = "iciicc")
-  query_table <- dplyr::distinct(
-    dplyr::mutate(dplyr::left_join(id_tbl, attr_tbl, by = "id"),
-                  alt_name = tolower(gsub("[[:punct:]]", "", alt_name))))
+  query_table <- dplyr::left_join(id_tbl, attr_tbl, by = "id")
+  query_table$alt_name <- tolower(gsub("[[:punct:]]", "", alt_name))
+  query_table <- dplyr::distinct(query_table)
 
   message("Saving final table to ", tbl_path)
   save(query_table, file = tbl_path)
@@ -127,7 +127,7 @@ id_attributes_query <- function() {
 # Adds correct urls and query params, while URL-encoding the SPARQL query string
 construct_sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
-  escaped_query <- URLencode(query, reserved = TRUE)
+  escaped_query <- utils::URLencode(query, reserved = TRUE)
   paste0(endpoint, ".csv?query=", escaped_query)
 }
 
@@ -144,7 +144,7 @@ check_ulanrdb_package <- function() {
 }
 
 install_ulanrdb_package <- function() {
-  input <- menu(c("Yes", "No"), title = "Install the ulanrdb package?")
+  input <- utils::menu(c("Yes", "No"), title = "Install the ulanrdb package?")
   if (input == 1) {
     message("Installing the ulanrdb package.")
     tryCatch(devtools::install_github("mdlincoln/ulanrdb"),

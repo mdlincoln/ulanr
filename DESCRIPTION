@@ -11,7 +11,8 @@ Imports:
   httr,
   dplyr,
   readr,
-  stringdist
+  stringdist,
+  utils
 LazyData: TRUE
 Suggests:
   testthat,

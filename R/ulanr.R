@@ -112,9 +112,9 @@ ulan_match <- function(names, early_year = -9999, late_year = 2090, strictly_bet
 
   # For long queries or if explicitly set, create and increment txtProgressBar
   if(all(interactive(), length(names) > 5)) {
-    pb <- txtProgressBar(min = 0, max = length(names), style = 3)
+    pb <- utils::txtProgressBar(min = 0, max = length(names), style = 3)
     ids <- mapply(function(a, b, c) {
-      setTxtProgressBar(pb, (getTxtProgressBar(pb) + 1))
+      utils::setTxtProgressBar(pb, (utils::getTxtProgressBar(pb) + 1))
       ulan_dispatcher(a, b, c, strictly_between, max_results, cutoff_score)},
       names, early_year, late_year, SIMPLIFY = FALSE, USE.NAMES = TRUE)
     close(pb)
