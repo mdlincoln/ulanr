@@ -72,7 +72,7 @@ build_tables <- function(tbl_path) {
   id_tbl <- readr::read_csv(httr::content(id_response, as = "text"), col_types = "ic")
   attr_tbl <- readr::read_csv(httr::content(attr_response, as = "text"), col_types = "iciicc")
   query_table <- dplyr::left_join(id_tbl, attr_tbl, by = "id")
-  query_table$alt_name <- tolower(gsub("[[:punct:]]", "", alt_name))
+  query_table$alt_name <- tolower(gsub("[[:punct:]]", "", query_table$alt_name))
   query_table <- dplyr::distinct(query_table)
 
   message("Saving final table to ", tbl_path)
