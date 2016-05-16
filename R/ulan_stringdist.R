@@ -8,9 +8,9 @@ ulan_stringdist_match_handler <- function(name, early_year, late_year, strictly_
   # Should life dates be a subset of early_year and late_year, or merely
   # intersecting with early_year and late_year?
   if(strictly_between) {
-    score_table <- dplyr::filter_(query_table, .dots = list(~birth_year >= early_year & death_year <= late_year))
+    score_table <- dplyr::filter_(.query_table, .dots = list(~birth_year >= early_year & death_year <= late_year))
   } else {
-    score_table <- dplyr::filter_(query_table, .dots = list(~birth_year <= late_year & death_year >= early_year))
+    score_table <- dplyr::filter_(.query_table, .dots = list(~birth_year <= late_year & death_year >= early_year))
   }
 
   # Look for exact matches - if we find them, then it's not necessary to do any

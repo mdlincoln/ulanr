@@ -1,3 +1,5 @@
+globalVariables(c(".query_table"))
+
 # Load the local ulanrdb table if it exists, otherwise advise the user that they
 # will need to install it if they wish to use local implementations of any ulanr
 # methods.

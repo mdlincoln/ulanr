@@ -51,7 +51,7 @@ ulanrdb_exists <- function() {
 
 # Is the query_table object loaded?
 ulanrdb_is_loaded <- function() {
-  exists("query_table")
+  exists(".query_table")
 }
 
 # Load the .rda file into the ulanr package environment. Note that this only
@@ -71,12 +71,12 @@ build_tables <- function(tbl_path) {
   message("Parsing downloads...")
   id_tbl <- readr::read_csv(httr::content(id_response, as = "text"), col_types = "ic")
   attr_tbl <- readr::read_csv(httr::content(attr_response, as = "text"), col_types = "iciicc")
-  query_table <- dplyr::left_join(id_tbl, attr_tbl, by = "id")
-  query_table$alt_name <- tolower(gsub("[[:punct:]]", "", query_table$alt_name))
-  query_table <- dplyr::distinct(query_table)
+  .query_table <- dplyr::left_join(id_tbl, attr_tbl, by = "id")
+  .query_table$alt_name <- tolower(gsub("[[:punct:]]", "", .query_table$alt_name))
+  .query_table <- dplyr::distinct(.query_table)
 
   message("Saving final table to ", tbl_path)
-  save(query_table, file = tbl_path)
+  save(.query_table, file = tbl_path)
 }
 
 # Retrieve Table combining all IDs with both pref and alt names unified in one
