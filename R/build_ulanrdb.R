@@ -7,19 +7,23 @@
 #'
 #' @export
 build_ulanrdb <- function() {
+
   # First check that ulanrdb is installed
   check_ulanrdb_package()
 
+  # Now check if a DB already exists. If so, offer to rewrite.
   if(ulanrdb_exists()) {
     input <- menu(c("Yes", "No"), title = paste0("Local database already exists. Overwrite?"))
     if(input == 2) {
       message("Not overwriting ", ulanrdb_path())
-      return()
+      return(invisible())
+    } else {
+      # If proceeding, clear out any existing db
+      delete_ulanrdb()
     }
   }
 
-  delete_ulanrdb()
-
+  # Confirm before starting download, offering approximate size
   input <- menu(c("Yes", "No"), title = paste0("Downloading tables to ", ulanrdb_path(), ". The total download size is usually ~26.5MB. Proceed?"))
   if(input == 1) {
     build_tables(ulanrdb_path())
@@ -27,6 +31,8 @@ build_ulanrdb <- function() {
     stop("A local ULAN database must be built in order to use the local versions of the ulanr functions.")
   }
 
+  # Once local table has been built and saved, reload the entire package in
+  # order to trigger .onAttach
   devtools::reload(devtools::inst("ulanr"))
 }
 
@@ -35,18 +41,23 @@ ulanrdb_path <- function() {
   paste0(system.file("db", package = "ulanrdb"), "/ulan_table.rda")
 }
 
+# Does an .rda file for the ULAN DB exist?
 ulanrdb_exists <- function() {
   file.exists(ulanrdb_path())
 }
 
+# Is the query_table object loaded?
 ulanrdb_is_loaded <- function() {
   exists("query_table")
 }
 
+# Load the .rda file into the ulanr package environment. Note that this only
+# works during .onAttach, before the environment is locked.
 load_ulanrdb <- function() {
   load(ulanrdb_path(), envir = as.environment("package:ulanr"))
 }
 
+# Download both tables, join, and save.
 build_tables <- function(tbl_path) {
   message("Downloading alternate names table (~18MB)")
   id_response <- httr::GET(construct_sparql_url(id_altname_query()), httr::progress())
@@ -110,12 +121,14 @@ id_attributes_query <- function() {
   }"
 }
 
+# Adds correct urls and query params, while URL-encoding the SPARQL query string
 construct_sparql_url <- function(query) {
   endpoint <- "http://vocab.getty.edu/sparql"
   escaped_query <- URLencode(query, reserved = TRUE)
   paste0(endpoint, ".csv?query=", escaped_query)
 }
 
+# Check the status of the ulanrdb package
 check_ulanrdb_package <- function() {
   ulanrdb_version <- "0.1"
   if (!requireNamespace("ulanrdb", quietly = TRUE)) {
