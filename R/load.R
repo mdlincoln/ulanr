@@ -1,3 +1,5 @@
+# A wee hack to get around .query_table not being defined elesewhere in the
+# package. This avoids a CRAN note
 globalVariables(c(".query_table"))
 
 # Load the local ulanrdb table if it exists, otherwise advise the user that they
