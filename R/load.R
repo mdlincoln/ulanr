@@ -4,7 +4,7 @@
 .onAttach <- function(libname, pkgname) {
   if(ulanrdb_exists()) {
     packageStartupMessage("Loading local ulanr database.")
-    load(ulanrdb_path(), envir = as.environment("package:ulanr"))
+    load_ulanrdb()
   } else {
     packageStartupMessage("To use the local implementation of ulanr functions, install ulanrdb and run build_ulanrdb().")
   }
