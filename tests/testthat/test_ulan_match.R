@@ -43,24 +43,18 @@ val_df <- dplyr::data_frame(
 context("SPARQL data results")
 
 test_that("no matching results returns NA", {
-  expect_equivalent(lapply(ulan_match("asfjk", method = "sparql"), is.na), list("asfjk" = is.na(na_df)))
-  expect_warning(ulan_match("asfjk", method = "sparql"), regexp = "asfjk")
+  expect_warning(expect_equivalent(lapply(ulan_match("asfjk", method = "sparql"), is.na), list("asfjk" = is.na(na_df))))
   expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn"), method = "sparql", max_results = 1), is.na), lapply(list("Rembrandt van Rijn" = val_df), is.na))
+  expect_equivalent(ulan_id(c("Rembrandt van Rijn", "Michelangelo Buonarotti"), method = "sparql"), c(500011051, 500010654))
+  expect_equivalent(is.na(ulan_id(c("Rembrandt van Rijn", "asdasdfasd"), method = "sparql")), is.na(c(500011051, NA)))
 })
 
 context("local data results")
 
 test_that("no matching results returns NA", {
-  expect_equivalent(lapply(ulan_match("asfjk", method = "local"), is.na), list("asfjk" = is.na(na_df)))
-  expect_warning(ulan_match("asfjk", method = "local"), regexp = "asfjk")
+  skip_if_not_installed("ulanrdb")
+  expect_warning(expect_equivalent(lapply(ulan_match("asfjk", method = "local"), is.na), list("asfjk" = is.na(na_df))))
   expect_equivalent(lapply(ulan_match(c("Rembrandt van Rijn"), method = "local", max_results = 1), is.na), lapply(list("Rembrandt van Rijn" = val_df), is.na))
-})
-
-context("ulan_id wrapper")
-
-test_that("returns integer vector", {
-  expect_equivalent(ulan_id(c("Rembrandt van Rijn", "Michelangelo Buonarotti"), method = "sparql"), c(500011051, 500010654))
-  expect_equivalent(is.na(ulan_id(c("Rembrandt van Rijn", "asdasdfasd"), method = "sparql")), is.na(c(500011051, NA)))
   expect_equivalent(ulan_id(c("Rembrandt van Rijn", "Michelangelo Buonarotti"), method = "local"), c(500011051, 500010654))
   expect_equivalent(is.na(ulan_id(c("Rembrandt van Rijn", "asdasdfasd"), method = "local")), is.na(c(500011051, NA)))
 })
