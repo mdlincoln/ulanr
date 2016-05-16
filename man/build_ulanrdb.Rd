@@ -10,6 +10,6 @@ build_ulanrdb()
 For use with method = "local" options on the ulan_ functions. This downloads
 a current database of IDs, preferred/alternate names, and biographical
 details from \url{http://vocab.getty.edu/sparql}. This requires that the
-container package \link{ulanrdb} is installed.
+container package \code{ulanrdb} is installed.
 }
 
